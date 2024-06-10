@@ -1,0 +1,726 @@
+tags: 
+    - name: Carts
+      description: Todo acerca de los carts
+
+paths:
+  /api/carts/:
+    get:
+      tags:
+        - Carts
+      summary: Obtiene un listado con todos los carritos
+      description: > 
+        Obtiene un listado con todos los carritos, soporta ordenamiento y limites
+           
+    
+      
+
+      responses:
+        '200':
+          description: Los carts fueron obtenidos satifactoriamente de la base de datos
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CartResponse'
+
+        '401':
+          description: "Error: Unauthorized"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: "Mensaje de error"
+                    example: "Unauthorized"  
+        '500':
+          description: Error interno del servidor, usalmente generado por una query defectuosa o un fallo de conexion con la base de datos
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    description: "Mensaje de error"
+                    example: "error" 
+                  message:
+                    type: string
+                    description: "Mensaje de error"
+                    example: "Mensaje de error" 
+    post:
+      tags:
+        - Carts
+      summary: Crea un nuevo Cart
+      description: > 
+        Crea un nuevo Cart.
+      operationId: newCarts
+      requestBody:
+        description: Create a new product in the store
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CartAdd'
+          
+        required: true
+      responses:
+        '200':
+          description: Los productos fueron obtenidos satifactoriamente de la base de datos
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ProductGetAll'
+
+        '401':
+          description: "Error: Unauthorized"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: "Mensaje de error"
+                    example: "Unauthorized"  
+        '409':
+          description: "No se puede insertar/modificar, Producto con code producto repetido"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: "Mensaje de error"
+                    example: "fail"
+                  menssage:
+                    type: string
+                    description: "Mensajes descriptiovos del error"
+                    example: "The 'code': product code field already exists in the database."  
+        
+        
+        '500':
+          description: Error interno del servidor, usalmente generado por una query defectuosa o un fallo de conexion con la base de datos
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    description: "Mensaje de error"
+                    example: "error" 
+                  message:
+                    type: string
+                    description: "Mensaje de error"
+                    example: "Mensaje de error" 
+    
+
+  /api/carts/{cid}:
+    get:
+      tags:
+        - Carts
+      summary: Obtiene un cart por Id
+      description: > 
+        Obtiene un cart por Id
+      operationId: getCartsById
+      parameters:
+        - name: cid
+          in: path
+          
+          description:  ID del cart a retornar
+          required: true
+          schema:
+            type: string
+            description: The cart's ID (Mongoose ObjectId)
+        
+
+      responses:
+        '200':
+          description: El cart fue obtenidos satifactoriamente de la base de datos
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CartGetOneResponse'
+
+        '401':
+          description: "Error: Unauthorized"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: "Mensaje de error"
+                    example: "Unauthorized"  
+        '404':
+          description: "Producto no encontrado"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: "Mensaje de error"
+                    example: "fail"
+                  menssage:
+                    type: string
+                    description: "Mensajes descriptiovos del error"
+                    example: "Error getting product by id"  
+        
+        '500':
+          description: Error interno del servidor, usalmente generado por una query defectuosa o un fallo de conexion con la base de datos
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    description: "Mensaje de error"
+                    example: "error" 
+                  message:
+                    type: string
+                    description: "Mensaje de error"
+                    example: "Mensaje de error" 
+    put:
+      tags:
+        - Carts
+      summary: Modifica todos los productos en un cart por Id
+      description: > 
+        Modifica un cart por Id
+      operationId: updateCarts
+      requestBody:
+        description: Update a product in the store by Id
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CartsAdd'
+          
+        required: true
+      parameters:
+        - name: pid
+          in: path
+          
+          description:  ID del producto a retornar
+          required: true
+          schema:
+            type: string
+            description: The products's ID (Mongoose ObjectId)
+      responses:
+        '200':
+          description: Los productos fueron obtenidos satifactoriamente de la base de datos
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ProductGetAll'
+
+        '401':
+          description: "Error: Unauthorized"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: "Mensaje de error"
+                    example: "Unauthorized"  
+        '404':
+          description: "Producto no encontrado"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: "Mensaje de error"
+                    example: "fail"
+                  menssage:
+                    type: string
+                    description: "Mensajes descriptiovos del error"
+                    example: "Error getting product by id"  
+        '409':
+          description: "No se puede insertar/modificar, Producto con code producto repetido"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: "Mensaje de error"
+                    example: "fail"
+                  menssage:
+                    type: string
+                    description: "Mensajes descriptiovos del error"
+                    example: "The 'code': product code field already exists in the database."  
+        
+        
+        '500':
+          description: Error interno del servidor, usalmente generado por una query defectuosa o un fallo de conexion con la base de datos
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    description: "Mensaje de error"
+                    example: "error" 
+                  message:
+                    type: string
+                    description: "Mensaje de error"
+                    example: "Mensaje de error" 
+    delete:
+      tags:
+        - Carts
+      summary: Elimina un producto por Id
+      description: > 
+        Elimina un producto por Id.
+      operationId: deleteCarts
+      parameters:
+        - name: pid
+          in: path
+          
+          description:  ID del producto a retornar
+          required: true
+          schema:
+            type: string
+            description: The products's ID (Mongoose ObjectId)
+      responses:
+        '200':
+          description: Accion finalizada sin errores
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Carts'
+
+        '401':
+          description: "Error: Unauthorized"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: "Mensaje de error"
+                    example: "Unauthorized"  
+        '404':
+          description: "Producto no encontrado"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: "Mensaje de error"
+                    example: "fail"
+                  menssage:
+                    type: string
+                    description: "Mensajes descriptiovos del error"
+                    example: "Error getting product by id"  
+        
+        '500':
+          description: Error interno del servidor, usalmente generado por una query defectuosa o un fallo de conexion con la base de datos
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    description: "Mensaje de error"
+                    example: "error" 
+                  message:
+                    type: string
+                    description: "Mensaje de error"
+                    example: "Mensaje de error" 
+  /api/carts/{cid}/product/{pid}:
+    post:
+      tags:
+        - Carts
+      summary: añade a un cart por Id un producto por id
+      description: > 
+        añade a un cart por Id un producto por id
+      operationId: updateCarts
+      requestBody:
+        description: add a product in cart  by Id
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Cart'
+          
+        required: true
+      parameters:
+        - name: cid
+          in: path
+          description:  ID del cart a añadir un product
+          required: true
+          schema:
+            type: string
+            description: The cart's ID (Mongoose ObjectId)
+        - name: pid
+          in: path
+          description:  ID del producto a añadir al cart
+          required: true
+          schema:
+            type: string
+            description: The products's ID (Mongoose ObjectId)
+      responses:
+        '200':
+          description: Los productos fueron añadidos satifactoriamente al cart 
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CartGetOneResponse'
+
+        '401':
+          description: "Error: Unauthorized"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: "Mensaje de error"
+                    example: "Unauthorized"  
+        '404':
+          description: "Producto no encontrado"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: "Mensaje de error"
+                    example: "fail"
+                  menssage:
+                    type: string
+                    description: "Mensajes descriptiovos del error"
+                    example: "Error getting product by id"  
+        '409':
+          description: "No se puede insertar/modificar, Producto con code producto repetido"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: "Mensaje de error"
+                    example: "fail"
+                  menssage:
+                    type: string
+                    description: "Mensajes descriptiovos del error"
+                    example: "The 'code': product code field already exists in the database."  
+        
+        
+        '500':
+          description: Error interno del servidor, usalmente generado por una query defectuosa o un fallo de conexion con la base de datos
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    description: "Mensaje de error"
+                    example: "error" 
+                  message:
+                    type: string
+                    description: "Mensaje de error"
+                    example: "Mensaje de error"  
+    put:
+      tags:
+        - Carts
+      summary: Modifica un cart por Id un producto por id
+      description: > 
+        Modifica un cart por Id un producto por id
+      operationId: updateCarts
+      requestBody:
+        description: add a product in cart  by Id
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Cart'
+          
+        required: true
+      parameters:
+        - name: cid
+          in: path
+          description:  ID del cart a añadir un product
+          required: true
+          schema:
+            type: string
+            description: The cart's ID (Mongoose ObjectId)
+        - name: pid
+          in: path
+          description:  ID del producto a añadir al cart
+          required: true
+          schema:
+            type: string
+            description: The products's ID (Mongoose ObjectId)
+      responses:
+        '200':
+          description: Los productos fueron añadidos satifactoriamente al cart 
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CartGetOneResponse'
+
+        '401':
+          description: "Error: Unauthorized"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: "Mensaje de error"
+                    example: "Unauthorized"  
+        '404':
+          description: "Producto no encontrado"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: "Mensaje de error"
+                    example: "fail"
+                  menssage:
+                    type: string
+                    description: "Mensajes descriptiovos del error"
+                    example: "Error getting product by id"  
+        '409':
+          description: "No se puede insertar/modificar, Producto con code producto repetido"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: "Mensaje de error"
+                    example: "fail"
+                  menssage:
+                    type: string
+                    description: "Mensajes descriptiovos del error"
+                    example: "The 'code': product code field already exists in the database."  
+        
+        
+        '500':
+          description: Error interno del servidor, usalmente generado por una query defectuosa o un fallo de conexion con la base de datos
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    description: "Mensaje de error"
+                    example: "error" 
+                  message:
+                    type: string
+                    description: "Mensaje de error"
+                    example: "Mensaje de error"  
+    delete:
+      tags:
+        - Carts
+      summary: Modifica un cart por Id un producto por id
+      description: > 
+        Modifica un cart por Id un producto por id
+      operationId: updateCarts
+      requestBody:
+        description: add a product in cart  by Id
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Cart'
+          
+        required: true
+      parameters:
+        - name: cid
+          in: path
+          description:  ID del cart a añadir un product
+          required: true
+          schema:
+            type: string
+            description: The cart's ID (Mongoose ObjectId)
+        - name: pid
+          in: path
+          description:  ID del producto a añadir al cart
+          required: true
+          schema:
+            type: string
+            description: The products's ID (Mongoose ObjectId)
+      responses:
+        '200':
+          description: Los productos fueron añadidos satifactoriamente al cart 
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CartGetOneResponse'
+
+        '401':
+          description: "Error: Unauthorized"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: "Mensaje de error"
+                    example: "Unauthorized"  
+        '404':
+          description: "Producto no encontrado"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: "Mensaje de error"
+                    example: "fail"
+                  menssage:
+                    type: string
+                    description: "Mensajes descriptiovos del error"
+                    example: "Error getting product by id"  
+        '409':
+          description: "No se puede insertar/modificar, Producto con code producto repetido"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: "Mensaje de error"
+                    example: "fail"
+                  menssage:
+                    type: string
+                    description: "Mensajes descriptiovos del error"
+                    example: "The 'code': product code field already exists in the database."  
+        
+        
+        '500':
+          description: Error interno del servidor, usalmente generado por una query defectuosa o un fallo de conexion con la base de datos
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    description: "Mensaje de error"
+                    example: "error" 
+                  message:
+                    type: string
+                    description: "Mensaje de error"
+                    example: "Mensaje de error"  
+  
+  
+
+
+
+
+components:
+  schemas:
+    Cart:
+      type: object
+      properties:
+        _id:
+          type: string
+          description: The cart's ID (Mongoose ObjectId)
+          example: "6602e9cad57bca1e4a7012aa"
+        products:
+          type: array
+          items:
+            type: object
+            properties:
+              product:
+                type: string
+                description: The product's ID (Mongoose ObjectId)
+                example: "60d21b4667d0d8992e610c85"
+              quantity:
+                type: integer
+                description: The quantity of the product
+                example: 2
+        __v:
+          type: integer
+          description: Version key (for internal use by Mongoose)
+          example: 0
+
+    CartResponse:
+      type: object
+      properties:
+        status:
+          type: string
+          description: The status of the response
+          example: "success"
+        payload:
+          type: array
+          items:
+            $ref: '#/components/schemas/Cart'
+
+    CartGetOneResponse:
+      type: object
+      properties:
+        status:
+          type: string
+          description: The status of the response
+          example: "success"
+        payload:
+          $ref: '#/components/schemas/Cart'
+
+    CartAdd:
+      type: object
+      required:
+        - products
+        - product
+        - quantity
+      properties:
+        products:
+          type: array
+          items:
+            type: object
+            properties:
+              product:
+                type: string
+                description: The product's ID (Mongoose ObjectId)
+                example: "60d21b4667d0d8992e610c85"
+              quantity:
+                type: integer
+                description: The quantity of the product
+                example: 2
+        
+
+   

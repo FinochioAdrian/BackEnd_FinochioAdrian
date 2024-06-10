@@ -1,0 +1,84 @@
+{{>nav}}
+
+<div class="container-fluid">
+
+<div class="row justify-content-center align-items-center g-2">
+    <h2>Bienvenido {{user.first_name}} {{user.last_name}} </h2>
+  <p>email: {{user.email}} Años: {{user.age}}  Rol: {{user.role}}</p>
+</div>
+<h4 class="d-flex justify-content-center">Todos nuestros Productos</h4>
+  <div class="row justify-content-center align-items-center g-2">
+    {{#each result.docs}}
+        
+        <a href="/product/{{this._id}}" class="col text-decoration-none">
+        
+        <div class="card" style="width: 18rem;">
+          {{#if this.thumbnails.length}}
+<img src="/images/products/{{this.thumbnails.[0]}}" class="bd-placeholder-img card-img-top img-fluid" style="aspect-ratio:4/3;" alt="...">
+            {{else}}
+             
+            
+         
+         
+                <svg
+                class="bd-placeholder-img card-img-top"
+                
+                role="img"
+                aria-label="Marcador de posición: Cap de imagen"
+                focusable="false"
+                preserveAspectRatio="xMidYMid slice"
+                xmlns="http://www.w3.org/2000/svg"
+                >
+                <title>Marcador de posición</title>
+                <rect width="100%" height="100%" fill="#868e96"></rect><text
+                    x="50%"
+                    y="50%"
+                    fill="#dee2e6"
+                    dy=".3em"
+                >
+               
+                   Sin imagen previa
+                
+                </text>
+                </svg>
+            {{/if}}
+            <div class="card-body">
+            <h5 class="card-title">{{this.title}} </h5>
+            <p class="card-text">{{this.description}}</p>
+            <p class="card-text"><span>Price: ${{this.price}}</span>
+            <span>Stock: {{this.stock}}</span></p>
+            <p class="card-text">Code: {{this.code}}</p>
+            <p class="card-text">Status: {{this.status}}</p>
+            
+            
+            </div>
+        </div>
+        
+
+        </a>
+        
+{{/each}}
+
+
+
+
+  </div>
+<nav aria-label="..." class="my-3">
+  <ul class="pagination">
+    <li class="page-item {{#unless result.prevPage }}disabled{{/unless}}">
+      <a class="page-link" href="{{result.prevLink}}">Previous</a>
+    </li>
+    {{#if result.prevPage}}  <li class="page-item "><a class="page-link" href="{{result.prevLink}}">{{result.prevPage}}</a></li>{{/if}}
+    <li class="page-item active"><a class="page-link" href="">{{result.page}}</a></li>
+    
+    {{#if result.nextPage}}  <li class="page-item"><a class="page-link" href="{{result.nextLink}}">{{result.nextPage}}</a></li>{{/if}}
+    
+    <li class="page-item {{#unless result.nextPage }}disabled{{/unless}}">
+      <a class="page-link" href="{{result.nextLink}}">Next</a>
+    </li>
+  </ul>
+</nav>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="/socket.io/socket.io.js"></script>

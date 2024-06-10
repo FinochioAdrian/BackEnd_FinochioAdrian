@@ -1,0 +1,49 @@
+<div
+  class="container min-vh-100 d-flex justify-content-center align-items-center"
+>
+  <div class="row col-md-4">
+    <div>
+      <div class="login-form">
+        <h2>Forgot Email and Password?</h2>
+        <form
+          method="POST"
+          action="/api/sessions/forgotEmailAndPassword"
+          id="login-form"
+        >
+          {{#if dangerMsg}}
+            <div class="alert alert-danger" role="alert">
+              {{dangerMsg}}
+            </div>
+          {{/if}}
+
+          {{#if warningMSG}}
+            <div class="alert alert-warning" role="alert">
+              {{warningMSG}}
+            </div>
+          {{/if}}
+          {{#if infoMSG}}
+            <div class="alert alert-info" role="alert">
+              {{infoMSG}}
+            </div>
+          {{/if}}
+          <div class="form-group">
+            <label for="email">Enter your last email</label>
+            <input
+              type="email"
+              class="form-control"
+              id="email"
+              name="email"
+              placeholder="Enter email"
+            />
+          </div>
+          
+          <button type="submit" class="btn btn-login">Validar Email</button>
+        </form>
+        <div class="social-auth">
+          <a href="/login"> Login </a>
+          <a href="/register">Don't have an account? Register Here</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

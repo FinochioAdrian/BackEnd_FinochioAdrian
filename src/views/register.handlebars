@@ -1,0 +1,85 @@
+<div
+  class="container min-vh-100 d-flex justify-content-center align-items-center"
+>
+  <div class="row col-md-4">
+    <div>
+      <div class="login-form">
+        <h2>Register</h2>
+        <form method="POST" action="/api/sessions/register" id="login-form">
+          {{#if dangerMsg}}
+            <div class="alert alert-danger" role="alert">
+              {{dangerMsg}}
+            </div>
+          {{/if}}
+
+          {{#if warningMSG}}
+            <div class="alert alert-warning" role="alert">
+              {{warningMSG}}
+            </div>
+          {{/if}}
+          {{#if infoMSG}}
+            <div class="alert alert-info" role="alert">
+              {{infoMSG}}
+            </div>
+          {{/if}}
+          <div class="form-group">
+            <label for="first_name">First Name</label>
+            <input
+              type="text"
+              name="first_name"
+              class="form-control"
+              id="first_name"
+              placeholder="Enter your first name"
+            />
+          </div>
+          <div class="form-group">
+            <label for="last_name">Last Name</label>
+            <input
+              type="text"
+              name="last_name"
+              class="form-control"
+              id="last_name"
+              placeholder="Enter your last name"
+            />
+          </div>
+          <div class="form-group">
+            <label for="age">Age</label>
+            <input
+              type="number"
+              name="age"
+              class="form-control"
+              id="age"
+              placeholder="Enter your age"
+            />
+          </div>
+          <div class="form-group">
+            <label for="email">Email Address</label>
+            <input
+              type="email"
+              class="form-control"
+              name="email"
+              id="email"
+              placeholder="Enter email"
+            />
+          </div>
+          <div class="form-group">
+            <label for="password">Password</label>
+            <input
+              type="password"
+              class="form-control"
+              name="password"
+              id="password"
+              placeholder="Enter password"
+            />
+          </div>
+
+          <button type="submit" class="btn btn-login">Register</button>
+        </form>
+        <div class="social-auth">
+          <a href="/login"> Login</a>
+          <a href="/findEmail" class="float-end">Forgot Email or Password?</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,24 @@
+[
+    {
+        "id": "18d1ddc44b1-f575379d",
+        "products": [
+            {
+                "_id": "65cb98d1dc7d5842cc80a282",
+                "quantity": 1
+            },
+            {
+                "_id": "65cb98d4dc7d5842cc80a286",
+                "quantity": 4
+            }
+        ]
+    },
+    {
+        "id": "18d1dde71b1-f704f5b3",
+        "products": [
+            {
+                "_id": "65cb98d4dc7d5842cc80a28a",
+                "quantity": 1
+            }
+        ]
+    }
+]

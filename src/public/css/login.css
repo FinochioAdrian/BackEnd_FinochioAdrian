@@ -1,0 +1,47 @@
+ .login-form {
+      /* min-width: 400px; */
+      margin: auto;
+      padding: 30px;
+      border-radius: 5px;
+      background-color: #fff;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+      body { /* More specific rule for login form background animation */
+        animation: background-color-shift 15s ease-in-out infinite alternate;
+      }
+    }
+    .form-group {
+      margin-bottom: 20px;
+    }
+    .btn-login {
+      background-color: #2196f3;
+      color: white;
+      border-radius: 5px;
+      padding: 10px 20px;
+      width: 100%;
+    }
+    .social-auth {
+      text-align: center;
+      margin-top: 20px;
+    }
+    .social-auth a {
+      margin-right: 10px;
+      color: #888;
+    }
+    .social-auth a:hover {
+      color: #2196f3;
+    }
+    
+  
+    
+    body {
+      background-color: #f0f2f5;
+    }
+    
+    
+
+@keyframes background-shift {
+  0% { background-color: #f0f2f5; }
+  50% { background-color: #e8f0fe; }
+  100% { background-color: #f0f2f5; }
+}
+

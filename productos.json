@@ -1,0 +1,77 @@
+[
+    {
+        "id": "18d1a4c8b79-16b05e12",
+        "title": " Producto A",
+        "description": "Nuevo Producto A",
+        "price": 5000,
+        "thumbnail": [
+            "Imagen_A1.jpg"
+        ],
+        "code": "A1B2C3",
+        "stock": 100,
+        "status": true
+    },
+    {
+        "id": "18d1dcfbf60-1e953666",
+        "title": "Producto B",
+        "description": "Nuevo Producto B",
+        "price": 5000,
+        "thumbnail": [
+            "Imagen_B1.jpg",
+            "Imagen_B2.jpg"
+        ],
+        "code": "D4E5F6",
+        "stock": 100,
+        "status": true
+    },
+    {
+        "id": "18d1dcfbf65-1e953986",
+        "title": "Producto C",
+        "description": "Nuevo Producto C",
+        "price": 2000,
+        "thumbnail": [],
+        "code": "D41E5F6",
+        "stock": 100,
+        "status": true
+    },
+    {
+        "id": "18d3e8d38c9-4a3b5f50",
+        "title": "Producto D",
+        "description": "Nuevo Producto D",
+        "price": 7865,
+        "thumbnail": [],
+        "code": "G6H7I8",
+        "stock": 45,
+        "status": true
+    },
+    {
+        "id": "18d3e904c45-10637486",
+        "title": "Producto E",
+        "description": "Nuevo Producto E",
+        "price": 9898,
+        "thumbnail": [],
+        "code": "J9K10L11",
+        "stock": 50,
+        "status": true
+    },
+    {
+        "id": "18d3e916513-ee3e09e3",
+        "title": "Producto F",
+        "description": "Nuevo Producto F",
+        "price": 45632,
+        "thumbnail": [],
+        "code": "M12N13O14",
+        "stock": 10,
+        "status": true
+    },
+    {
+        "id": "18d70fa60d5-c989b566",
+        "title": "Producto G",
+        "description": "Nuevo Producto g",
+        "price": 5250,
+        "thumbnail": [],
+        "code": "P15Q16R17",
+        "stock": 1000,
+        "status": true
+    }
+]

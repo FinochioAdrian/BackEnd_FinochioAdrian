@@ -1,0 +1,25 @@
+
+    body {
+      font-family: 'Montserrat', sans-serif;
+      background-color: #f0f2f5;
+    }
+    .error-container {
+      text-align: center;
+      padding: 100px 0;
+    }
+    .error-code {
+      font-size: 120px;
+      color: #ffc107;
+      margin-bottom: 20px;
+    }
+    .error-message {
+      font-size: 24px;
+      font-weight: bold;
+      margin-bottom: 30px;
+    }
+    .btn-home {
+      background-color: #2196f3;
+      color: white;
+      border-radius: 5px;
+      padding: 10px 20px;
+    }

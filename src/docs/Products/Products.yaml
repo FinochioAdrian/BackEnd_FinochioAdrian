@@ -1,0 +1,572 @@
+tags: 
+    - name: Products
+      description: Todo acerca de productos
+
+paths:
+  /api/products/:
+    get:
+      tags:
+        - Products
+      summary: Obtiene todos los productos
+      description: > 
+        Obtiene un listado de todos los productos, soporta ordenamiento y limites
+      parameters:
+        - in: query
+          name: limit
+          schema:
+            type: integer
+          description:  La cantidad de productos a retornar
+          required: false
+        - in: query
+          name: page
+          schema:
+            type: integer
+          description: El número de página a retornar
+          required: false
+        - in: query
+          name: sort
+          schema:
+            type: string
+            enum:
+              - asc
+              - desc
+          description: El ordenamiento de la lista de producto por nombre
+          required: false
+        - in: query
+          name: available
+          schema:
+            type: boolean
+          description: retorna producto por disponibilidad
+          required: false
+        - in: query
+          name: category
+          schema:
+            type: string
+          description: retorna producto por categoria
+          required: false
+      
+
+      responses:
+        '200':
+          description: Los productos fueron obtenidos satifactoriamente de la base de datos
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ProductGetAll'
+
+        '401':
+          description: "Error: Unauthorized"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: "Mensaje de error"
+                    example: "Unauthorized"  
+        '500':
+          description: Error interno del servidor, usalmente generado por una query defectuosa o un fallo de conexion con la base de datos
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    description: "Mensaje de error"
+                    example: "error" 
+                  message:
+                    type: string
+                    description: "Mensaje de error"
+                    example: "Mensaje de error" 
+    post:
+      tags:
+        - Products
+      summary: Inserta un nuevo productos
+      description: > 
+        Inserta nuevos productos.
+      operationId: addProducts
+      requestBody:
+        description: Create a new product in the store
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProductsAdd'
+          
+        required: true
+      responses:
+        '200':
+          description: Los productos fueron obtenidos satifactoriamente de la base de datos
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ProductGetAll'
+
+        '401':
+          description: "Error: Unauthorized"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: "Mensaje de error"
+                    example: "Unauthorized"  
+        '409':
+          description: "No se puede insertar/modificar, Producto con code producto repetido"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: "Mensaje de error"
+                    example: "fail"
+                  menssage:
+                    type: string
+                    description: "Mensajes descriptiovos del error"
+                    example: "The 'code': product code field already exists in the database."  
+        
+        
+        '500':
+          description: Error interno del servidor, usalmente generado por una query defectuosa o un fallo de conexion con la base de datos
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    description: "Mensaje de error"
+                    example: "error" 
+                  message:
+                    type: string
+                    description: "Mensaje de error"
+                    example: "Mensaje de error" 
+    
+
+  /api/products/{pid}:
+    get:
+      tags:
+        - Products
+      summary: Obtiene un producto por Id
+      description: > 
+        Obtiene un producto por Id
+      operationId: getProductsById
+      parameters:
+        - name: pid
+          in: path
+          
+          description:  ID del producto a retornar
+          required: true
+          schema:
+            type: string
+            description: The products's ID (Mongoose ObjectId)
+        
+
+      responses:
+        '200':
+          description: Los productos fueron obtenidos satifactoriamente de la base de datos
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Products'
+
+        '401':
+          description: "Error: Unauthorized"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: "Mensaje de error"
+                    example: "Unauthorized"  
+        '404':
+          description: "Producto no encontrado"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: "Mensaje de error"
+                    example: "fail"
+                  menssage:
+                    type: string
+                    description: "Mensajes descriptiovos del error"
+                    example: "Error getting product by id"  
+        
+        '500':
+          description: Error interno del servidor, usalmente generado por una query defectuosa o un fallo de conexion con la base de datos
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    description: "Mensaje de error"
+                    example: "error" 
+                  message:
+                    type: string
+                    description: "Mensaje de error"
+                    example: "Mensaje de error" 
+    put:
+      tags:
+        - Products
+      summary: Modifica un producto por Id
+      description: > 
+        Modifica un producto por Id.
+      operationId: updateProducts
+      requestBody:
+        description: Update a product in the store by Id
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProductsAdd'
+          
+        required: true
+      parameters:
+        - name: pid
+          in: path
+          
+          description:  ID del producto a retornar
+          required: true
+          schema:
+            type: string
+            description: The products's ID (Mongoose ObjectId)
+      responses:
+        '200':
+          description: Los productos fueron obtenidos satifactoriamente de la base de datos
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ProductGetAll'
+
+        '401':
+          description: "Error: Unauthorized"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: "Mensaje de error"
+                    example: "Unauthorized"  
+        '404':
+          description: "Producto no encontrado"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: "Mensaje de error"
+                    example: "fail"
+                  menssage:
+                    type: string
+                    description: "Mensajes descriptiovos del error"
+                    example: "Error getting product by id"  
+        '409':
+          description: "No se puede insertar/modificar, Producto con code producto repetido"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: "Mensaje de error"
+                    example: "fail"
+                  menssage:
+                    type: string
+                    description: "Mensajes descriptiovos del error"
+                    example: "The 'code': product code field already exists in the database."  
+        
+        
+        '500':
+          description: Error interno del servidor, usalmente generado por una query defectuosa o un fallo de conexion con la base de datos
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    description: "Mensaje de error"
+                    example: "error" 
+                  message:
+                    type: string
+                    description: "Mensaje de error"
+                    example: "Mensaje de error" 
+    delete:
+      tags:
+        - Products
+      summary: Elimina un producto por Id
+      description: > 
+        Elimina un producto por Id.
+      operationId: deleteProducts
+      parameters:
+        - name: pid
+          in: path
+          
+          description:  ID del producto a retornar
+          required: true
+          schema:
+            type: string
+            description: The products's ID (Mongoose ObjectId)
+      responses:
+        '200':
+          description: Accion finalizada sin errores
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Products'
+
+        '401':
+          description: "Error: Unauthorized"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: "Mensaje de error"
+                    example: "Unauthorized"  
+        '404':
+          description: "Producto no encontrado"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: "Mensaje de error"
+                    example: "fail"
+                  menssage:
+                    type: string
+                    description: "Mensajes descriptiovos del error"
+                    example: "Error getting product by id"  
+        
+        '500':
+          description: Error interno del servidor, usalmente generado por una query defectuosa o un fallo de conexion con la base de datos
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    description: "Mensaje de error"
+                    example: "error" 
+                  message:
+                    type: string
+                    description: "Mensaje de error"
+                    example: "Mensaje de error" 
+    
+
+  /api/products/mockingproducts:
+    get:
+      summary: Obtiene un listado de productos generados por mock
+      tags:
+        - Products
+      responses:
+        '200':
+          description: Los productos fueron obtenidos satifactoriamente de la base de datos
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ProductResponse'
+
+        '401':
+          description: "Error: Unauthorized"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: "Mensaje de error"
+                    example: "Unauthorized"  
+        '500':
+          description: Error interno del servidor, usalmente generado por una query defectuosa o un fallo de conexion con la base de datos
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    description: "Mensaje de error"
+                    example: "error" 
+                  message:
+                    type: string
+                    description: "Mensaje de error"
+                    example: "Mensaje de error" 
+
+  
+
+
+components:
+  schemas:
+    ProductGetAll:
+      type: object
+      properties:
+        status:
+          type: string
+          description: The response status (e.g., "success")
+          example: "success"
+        payload:
+          type: object
+          properties:
+            products:
+              type: array
+              items:
+                $ref: '#/components/schemas/Products'
+              description: An array of product objects
+        prevLink:
+          type: string
+          description: URL to the previous page of results (if available)
+          example: "https://example.com/api/products/?page=1"
+        nextLink:
+          type: string
+          description: URL to the next page of results (if available)
+          example: "https://example.com/api/products/?page=2"
+
+    
+    ProductResponse:  
+      type: object
+      properties:
+        status:  
+          type: string
+          description: The response status (e.g., "success")
+          example: "success"
+        payload: 
+          type: array
+          items:
+            $ref: '#/components/schemas/Products'  
+
+    ProductsAdd:  
+      type: object
+      required:
+        - title
+        - description
+        - code
+        - price
+        - status
+        - stock
+        - category
+      properties:
+        _id:
+          type: string
+          description: The products's ID (Mongoose ObjectId)
+          example: "663b81ec33400646ab2232fa"
+        title:
+          type: string
+          description: The title of the product
+        description:
+          type: string
+          description: A detailed description of the product
+        code:
+          type: string
+          description: Unique product code
+          unique: true
+        price:
+          type: number
+          description: The price of the product
+        status:
+          type: boolean
+          description: Whether the product is active (true) or inactive (false)
+          default: true
+        stock:
+          type: integer
+          description: The current stock quantity of the product
+        category:
+          type: string
+          description: The category the product belongs to
+        thumbnails:
+          type: array
+          items:
+            type: string
+          description: An array of image URLs for product thumbnails
+        
+    Products:  
+      type: object
+      required:
+        - title
+        - description
+        - code
+        - price
+        - status
+        - stock
+        - category
+      properties:
+        _id:
+          type: string
+          description: The products's ID (Mongoose ObjectId)
+          example: "663b81ec33400646ab2232fa"
+        title:
+          type: string
+          description: The title of the product
+        description:
+          type: string
+          description: A detailed description of the product
+        code:
+          type: string
+          description: Unique product code
+          unique: true
+        price:
+          type: number
+          description: The price of the product
+        status:
+          type: boolean
+          description: Whether the product is active (true) or inactive (false)
+          default: true
+        stock:
+          type: integer
+          description: The current stock quantity of the product
+        category:
+          type: string
+          description: The category the product belongs to
+        thumbnails:
+          type: array
+          items:
+            type: string
+          description: An array of image URLs for product thumbnails
+        owner:
+          type: object
+          properties:
+            _id:
+              type: string
+              description: The owner's ID (Mongoose ObjectId)
+              example: "663b81ec33400646ab2232fa"
+            admin:
+              type: boolean
+              description: > 
+                Whether the owner is an administrator (default: false)
+
+ 
+    
