@@ -41,10 +41,8 @@ class CartDao {
   };
   addNewProductInCartById = async (cartId, productID, quantity = 1) => {
     try {
-      const result = await Cart.findOne({
-        _id: cartId,
-        "products.product": productID,
-      });
+      //Buscar un cart por id y con el producto
+      const result = await Cart.findOne({ _id: cartId,"products.product": productID,});
 
       if (!result) {
         // Si no se encontró un carrito con el producto, agregar el producto al carrito aquí
@@ -55,6 +53,7 @@ class CartDao {
         );
         return updatedCart;
       } else {
+        //Si se encotro el producto en el cart, debo de actualizar el la cantidad solicitada por el cliente en su cart
         const updatedCart = await this.updateOneProductInCart(
           cartId,
           productID,
@@ -90,28 +89,30 @@ class CartDao {
   };
   updateAllProductsInCart = async (cartId, products) => {
     try {
+      // Extraer IDs únicos de productos
       const uniqueProductIds = new Set(products.map((product) => product._id));
-
+  
+      // Verificar si hay duplicados
       if (uniqueProductIds.size !== products.length) {
         // Duplicados encontrados, manejar el error
         throw new Error("Duplicados encontrados en la matriz de productos");
       }
-
+  
+      // Actualizar el carrito con los nuevos productos
       const result = await Cart.findOneAndUpdate(
         { _id: cartId },
         { $set: { products: products } },
         { new: true }
       ).lean();
-
+  
       return result;
     } catch (error) {
-      console.error(
-        "Error al agregar o actualizar producto en el carrito:",
-        error
-      );
+      // Manejo de errores
+      console.error("Error al agregar o actualizar producto en el carrito:", error);
       throw error;
     }
   };
+  
   removeProductInCartById = async (cartId, productID) => {
     try {
       const result = await Cart.findOneAndUpdate(

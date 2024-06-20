@@ -4,7 +4,7 @@
 
 |Feature_Number |  Status       | Action |  Description |
 |---------------|---------------|--------|--------------|
-| 15_*          |   Started     | Modify |  modify la logica de carrito para que un usuario premiun NO pueda agregar a su carrito un producto que le pertenece|
+| 15_*          |   Fnished     | Modify |  modify la logica de carrito para que un usuario premiun NO pueda agregar a su carrito un producto que le pertenece|
 | 13_*          |   pending     | Modify |  modify customizar errores, crear diccionario errores comunes|
 | 14_*          |   pending     | Modify |  modify ruta /loggerTest|
 | 18_06         |   pending     | Modify |  modify /api/users/premium/:uid para que actulize al usuario como premium solo si ha cargado los siguientes documentos identificacion, Comprobante de domicilio, comprobante de estado de cuenta, devolver error indicando que el usuario no ha terminado de procesar su documentacion. |

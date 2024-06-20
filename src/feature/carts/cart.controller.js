@@ -4,16 +4,15 @@ import {
 } from "../products/repository/index.js";
 import { cartsService as Carts, cartsService } from "./repository/index.js";
 import { ticketsService } from "../tickets/repository/tickets.service.js";
-import {logger} from '../../utils/loggerMiddleware/logger.js'
+import { logger } from '../../utils/loggerMiddleware/logger.js'
 
 
 //TODO: Agregar middleware de errors, and logger
 
 async function getAll(req, res) {
   try {
-   
     const cartFound = await cartsService.getAll();
-    return res.send({status:"success", payload:cartFound});
+    return res.send({ status: "success", payload: cartFound });
   } catch (error) {
     console.error(error);
     return res.status(error.status || 500).send({
@@ -25,8 +24,6 @@ async function getAll(req, res) {
 }
 async function get(req, res) {
   try {
-   
-    
     const { cid } = req.params;
 
     const cartFound = await cartsService.getById(cid);
@@ -63,16 +60,25 @@ async function create(req, res) {
 
 async function addProductInCart(req, res) {
   try {
+    const { user } = req
     const { cid, pid } = req.params;
-
+    // Buscar el cart
     const cart = await Carts.getById(cid);
     if (!cart) {
       return res.status(404).send({ status: "fail", msg: "Cart no found" });
     }
+    // Buscar el producto
+
     const product = await Products.getById(pid);
+
 
     if (!product) {
       return res.status(404).send({ status: "fail", msg: "Product no found" });
+    }
+
+    // validar que usuario premiun no pueda añadir a su cart un producto propio
+    if (user._id == product.owner._id) {
+      return res.status(409).send({ status: "Conflict", msg: "This product is already yours. You cannot add it to your cart." });
     }
 
     const result = await Carts.addNewProductInCartById(cart._id, product._id);
@@ -214,20 +220,20 @@ async function purchase(req, res) {
       }
       return res.status(404).send({ status: "fail", msg: "Cart no found" });
     }
-   
+
     let amount = 0;
     const products = cart.products.map((producto, index, array) => {
       if (producto.quantity <= producto.product.stock) {
         amount += producto.quantity * producto.product.price;
         producto.product.stock -= producto.quantity;
         const productsPurchase = array.splice(index, 1);
-        
+
         return productsPurchase;
       }
     });
-    
-    let productsPurchase = products[0]||[]
-    
+
+    let productsPurchase = products[0] || []
+
     if (productsPurchase.length > 0) {
 
       for (const product of productsPurchase) {
@@ -237,8 +243,8 @@ async function purchase(req, res) {
           logger.error("❌ ~ purchase ~ error:", error)
           throw error
         }
-   
-        
+
+
       }
       const cartsUpdate = await cartsService.update(cart._id, cart);
       const newcart = await cartsService.getById(cid);

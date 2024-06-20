@@ -47,7 +47,7 @@ auth(["user","premium","admin"]),
   CartController.addProductInCart
 );
 
-//update one product in cart by cart id and product id
+//update quantity for one product in cart by cart id and product id
 
 router.put(
   "/:cid/product/:pid",

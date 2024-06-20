@@ -41,7 +41,7 @@ async function setDocuments(req, res, next) {
     try {
         const { files } = req
         const { uid } = req.params
-        console.log("🚀 ~ setDocuments ~ uid:", uid)
+        
 
 
 

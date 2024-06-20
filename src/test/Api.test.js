@@ -7,7 +7,7 @@ import productModel from "../feature/products/product.model.js";
 import { createHash } from "../utils.js";
 import { logger } from "../utils/loggerMiddleware/logger.js";
 import fs from 'fs/promises'
-import { assert } from "console";
+import UsersDAO from "../feature/users/users.dao.js";
 
 const url = "mongodb://localhost:27017/loginClase20"
 
@@ -19,13 +19,23 @@ const requester = supertest('http://localhost:8080')
 
 const documents = []
 let cookieUser;
+let cookieUserPremiun;
 let cookieAdmin;
+let pidAddForPremiun
 let mockUser = {
     first_name: 'Adrian',
     last_name: 'Finochio',
     age: 30,
     email: 'eidrienhez33@gmail.com',
     password: '123456789',
+}
+let mockUserPremiun = {
+    first_name: 'Ezequiel',
+    last_name: 'Finochio',
+    age: 30,
+    email: 'finochio.adrian@outlook.com',
+    password: '123456789',
+    role: 'premium'
 }
 let mockUserAdmin = {
     first_name: 'Admin',
@@ -42,21 +52,21 @@ describe('Testing API', () => {
         const products = await productModel.find()
         await BorrarImagenesAlmacenadas(products)
         await productModel.deleteMany({})
-
-
         this.timeout = 5000
 
     })
     after(async function () {
 
 
-
+        const products = await productModel.find()
+        await BorrarImagenesAlmacenadas(products)
+        await productModel.deleteMany({})
         await BorrarDocumentsAlmacenados(documents)
         this.timeout = 10000
 
     })
 
-    describe('La db esta vacia', () => {
+    describe('Incialización de la DB', () => {
         it('La Tabla users Esta vacia', async () => {
             const users = await usersModel.find()
             expect(users).to.be.empty
@@ -81,6 +91,20 @@ describe('Testing API', () => {
             const userAdmin = await usersModel.findOne({ email, password })
             expect(userAdmin.email).to.be.equal(mockUserAdmin.email)
             expect(userAdmin.role).to.be.equal(mockUserAdmin.role)
+
+        })
+        it('Se creo un usuario Premiun correctamente', async () => {
+            let { email, password } = mockUserPremiun
+            password = createHash(mockUserPremiun.password)
+
+
+            const User = new UsersDAO()
+            const userPremiun = await User.insert({ ...mockUserPremiun, password })
+            
+
+
+            expect(userPremiun.email).to.be.equal(mockUserPremiun.email)
+            expect(userPremiun.role).to.be.equal(mockUserPremiun.role)
 
         })
     })
@@ -113,6 +137,30 @@ describe('Testing API', () => {
             expect(cookieUser.name).to.be.ok.and.eql('jwt')
             expect(cookieUser.value).to.be.ok
             expect(result._body).to.be.eql({ status: "success", msg: "Logged in" })
+
+
+
+
+
+
+        })
+        it('/api/sessions/login Debe logear un usuario Premiun correctamente y DEVOLVER UNA COOKIE', async function () {
+
+            const { email, password } = mockUserPremiun
+
+
+            const result = await requester.post('/api/sessions/login').set('Accept', 'application/json').send({ email, password })
+            const cookieResult = result.headers['set-cookie'][0]
+            expect(cookieResult).to.be.ok
+            cookieUserPremiun = {
+                name: cookieResult.split('=')[0],
+                value: cookieResult.split('=')[1]
+            }
+            expect(result.statusCode).to.be.equal(200)
+            expect(cookieUserPremiun.name).to.be.ok.and.eql('jwt')
+            expect(cookieUserPremiun.value).to.be.ok
+            expect(result._body).to.be.eql({ status: "success", msg: "Logged in" })
+
 
 
 
@@ -155,21 +203,22 @@ describe('Testing API', () => {
 
 
     describe("Endpoint Products test", () => {
+        const mockProducts = {
+            title: "Notebook Chiken",
+            description: "Nuevo Notebook Chiken",
+            code: "Chiken1000",
+            price: 10000,
+            status: true,
+            stock: 10,
+            category: "IT",
+            thumbnails: [
+                "./src/test/ImgProductTest/NotebookChiken.webp"
+            ]
+        }
         let pid
 
-        it("post /api/sessions/products permite añadir un producto con imagen solo a usuarios premium y admin", async () => {
-            const mockProducts = {
-                title: "Notebook Chiken",
-                description: "Nuevo Notebook Chiken",
-                code: "Chiken1000",
-                price: 10000,
-                status: true,
-                stock: 10,
-                category: "IT",
-                thumbnails: [
-                    "./src/test/ImgProductTest/NotebookChiken.webp"
-                ]
-            }
+        it("post /api/sessions/products no permite añadir un producto (con imagen) a usuarios sin premium", async () => {
+
 
             const { statusCode, _body } = await requester.post("/api/products/").set('Accept', 'application/json').set('Cookie', [`${cookieUser.name}=${cookieUser.value}`])
                 .field('title', mockProducts.title)
@@ -186,10 +235,34 @@ describe('Testing API', () => {
             expect(statusCode).to.be.eq(403)
             expect(_body).to.have.property("error").with.eql('No permissions')
 
+        })
+        it("post /api/sessions/products permite añadir un producto con imagen a usuarios premium ", async () => {
+
+            const { statusCode: code, _body: body } = await requester.post("/api/products/").set('Accept', 'application/json').set('Cookie', [`${cookieUserPremiun.name}=${cookieUserPremiun.value}`])
+                .field('title', mockProducts.title)
+                .field('description', mockProducts.description)
+                .field('code', 'insertForPremiun')
+                .field('price', mockProducts.price)
+                .field('status', mockProducts.status)
+                .field('stock', mockProducts.stock)
+                .field('category', mockProducts.category)
+                .attach("thumbnails", mockProducts.thumbnails[0])
+
+
+            expect(code).to.be.eq(201)
+            expect(body).to.be.an("object").and.to.have.property('payload')
+            pidAddForPremiun = body.payload._id
+            
+
+
+
+        })
+        it("post /api/sessions/products permite añadir un producto con imagen a usuarios admin", async () => {
+            
             const { statusCode: code, _body: body } = await requester.post("/api/products/").set('Accept', 'application/json').set('Cookie', [`${cookieAdmin.name}=${cookieAdmin.value}`])
                 .field('title', mockProducts.title)
                 .field('description', mockProducts.description)
-                .field('code', mockProducts.code)
+                .field('code', 'insertForAdmin')
                 .field('price', mockProducts.price)
                 .field('status', mockProducts.status)
                 .field('stock', mockProducts.stock)
@@ -203,6 +276,7 @@ describe('Testing API', () => {
 
 
         })
+
 
         it("get /api/products devuelve una lista de productos solo a usuarios logueados ", async () => {
 
@@ -355,6 +429,34 @@ describe('Testing API', () => {
 
         })
 
+        it("Un usuario Premiun no debe poder agregar un producto propio a su cart", async () => {
+
+            const pid = pidAddForPremiun
+
+
+            expect(mongoose.isValidObjectId(pid)).to.be.true
+
+            const userResult = await requester.get('/api/sessions/current').set('Accept', 'application/json').set('Cookie', [`${cookieUserPremiun.name}=${cookieUserPremiun.value}`])
+
+            const cid = userResult._body.payload.cart
+
+
+            expect(mongoose.isValidObjectId(cid)).to.be.true
+
+            const cartResult = await requester.post(`/api/carts/${cid}/product/${pid}`).set('Accept', 'application/json').set('Cookie', [`${cookieUserPremiun.name}=${cookieUserPremiun.value}`])
+            const { statusCode, _body } = cartResult
+
+
+
+            expect(statusCode).to.be.eql(409)
+            expect(_body).to.have.property("msg").with.eql("This product is already yours. You cannot add it to your cart.")
+
+
+
+
+
+        })
+
 
 
     })
@@ -444,14 +546,14 @@ describe('Testing API', () => {
             expect(statusCode).to.be.eq(201)
         })
 
-        it('/api/users/:uid debe devolver error si el usuario no ha cargado los documentos', async ()=>{
-            expect("incomplete").to.be.eql("complete")  
+        it('/api/users/:uid debe devolver error si el usuario no ha cargado los documentos', async () => {
+            expect("incomplete").to.be.eql("complete")
         })
-        it('/api/users/:uid debe actualizar a un usuario como premiun solo si ha cargado los 3 documentos', async ()=>{
-            expect("incomplete").to.be.eql("complete")  
+        it('/api/users/:uid debe actualizar a un usuario como premiun solo si ha cargado los 3 documentos', async () => {
+            expect("incomplete").to.be.eql("complete")
         })
-        it('/api/users/:uid debe de poder actualizar a un usuario premiun como user', async ()=>{
-            expect("incomplete").to.be.eql("complete")  
+        it('/api/users/:uid debe de poder actualizar a un usuario premiun como user', async () => {
+            expect("incomplete").to.be.eql("complete")
         })
     })
 
@@ -467,13 +569,17 @@ describe('Testing API', () => {
 })
 
 async function borrarArchivo(filePath) {
-    try {
+    try {        
+        if(!filePath){
+            return
+        }
         await fs.unlink(filePath);
     } catch (err) {
+        
         logger.error(
-            "❌ ~ runValidation ~ err:",
-            "error eliminando el archivo " + filePath + " ",
-            err
+            `❌ ~ runValidation ~ err:
+            error eliminando el archivo ${filePath} , ${err}
+            `
         );
     }
 }
@@ -488,7 +594,6 @@ async function BorrarImagenesAlmacenadas(products) {
     }
 }
 async function BorrarDocumentsAlmacenados(documents) {
-
 
     for (const ruta of documents) {
 
