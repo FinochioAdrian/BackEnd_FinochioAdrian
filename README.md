@@ -4,10 +4,10 @@
 
 |Feature_Number |  Status       | Action |  Description |
 |---------------|---------------|--------|--------------|
-| 15_*          |   Fnished     | Modify |  modify la logica de carrito para que un usuario premiun NO pueda agregar a su carrito un producto que le pertenece|
+| 15_*          |   Finished     | Modify |  modify la logica de carrito para que un usuario premiun NO pueda agregar a su carrito un producto que le pertenece|
 | 13_*          |   pending     | Modify |  modify customizar errores, crear diccionario errores comunes|
 | 14_*          |   pending     | Modify |  modify ruta /loggerTest|
-| 18_06         |   pending     | Modify |  modify /api/users/premium/:uid para que actulize al usuario como premium solo si ha cargado los siguientes documentos identificacion, Comprobante de domicilio, comprobante de estado de cuenta, devolver error indicando que el usuario no ha terminado de procesar su documentacion. |
+| 18_06         |   Finished     | Modify |  modify /api/users/premium/:uid para que actualize al usuario como premium solo si ha cargado los siguientes documentos identificacion, Comprobante de domicilio, comprobante de estado de cuenta, devolver error indicando que el usuario no ha terminado de procesar su documentacion. |
 |19_01          |   unstarted   | Add    |In /api/users add router GET / deberá retornar todos los usuarios, solo datos principales (name,email,rol)|
 |19_02          |   unstarted   | Add    |In /api/users add router Delete / deberá limpiar a todos los usuarios que o haya tenido conexión en los utlimos 2 días, Deberá enviar correo indicando al usuario que su cuenta ha sido eliminada por inactividad|
 |19_03          |   unstarted   | Add    | View /views/  visualizar , modificar rol, y eliminar|

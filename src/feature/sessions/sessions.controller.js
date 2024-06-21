@@ -277,8 +277,22 @@ async function failLogin(req, res) {
   return res.status(401).send({ error: "Failed login" });
 }
 
-async function current(req, res) {
-  res.json({ status: "success", payload: req.user });
+async function current(req, res, next) {
+  try {
+    const { user } = req
+    const userResult = await usersService.getUserByID(user._id)
+    const payload= { ...user, role:userResult.role }
+
+   
+
+    res.json({ status: "success", payload });
+  } catch (error) {
+    
+    next(error)
+  }
+
+
+
 }
 
 export default {

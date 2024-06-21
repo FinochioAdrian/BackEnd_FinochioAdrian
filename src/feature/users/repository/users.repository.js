@@ -64,6 +64,12 @@ export default class UsersRepository {
     if (!result) return null;
     return new UserDto(result);
   };
+  getUserByIdAllData = async (id) => {
+    const UserToFind = new UserDto({ _id: id });
+    const result = await this.dao.getUserByIdAllData(UserToFind);
+    if (!result) return null;
+    return new UserDto(result);
+  };
   newPassword = async (user) => {
     const UserToInsert = new UserDto(user);
     const result = await this.dao.newPassword(UserToInsert);

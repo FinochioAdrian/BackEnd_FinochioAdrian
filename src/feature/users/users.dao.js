@@ -59,13 +59,29 @@ export default class UsersDAO {
     }
   }
 
-  // get user by id
+  /**
+   * get user by id return short data
+   *  */ 
   async getUserByID(user) {
     try {
       // find user by id and select specific fields
       return await Users.findOne(
         { _id: user?.id || user._id },
         { first_name: 1, last_name: 1, age: 1, email: 1, role: 1 }
+      ).lean();
+    } catch (error) {
+      logger.error("❌ ~ UsersDAO ~ getUserByID ~ error:", error);
+      throw error;
+    }
+  }
+  /**
+   * get user by id return all data
+   *  */
+  async getUserByIdAllData(user) {
+    try {
+      // find user by id and select specific fields
+      return await Users.findOne(
+        { _id: user?.id || user._id }
       ).lean();
     } catch (error) {
       logger.error("❌ ~ UsersDAO ~ getUserByID ~ error:", error);

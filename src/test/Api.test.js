@@ -100,7 +100,7 @@ describe('Testing API', () => {
 
             const User = new UsersDAO()
             const userPremiun = await User.insert({ ...mockUserPremiun, password })
-            
+
 
 
             expect(userPremiun.email).to.be.equal(mockUserPremiun.email)
@@ -252,13 +252,13 @@ describe('Testing API', () => {
             expect(code).to.be.eq(201)
             expect(body).to.be.an("object").and.to.have.property('payload')
             pidAddForPremiun = body.payload._id
-            
+
 
 
 
         })
         it("post /api/sessions/products permite añadir un producto con imagen a usuarios admin", async () => {
-            
+
             const { statusCode: code, _body: body } = await requester.post("/api/products/").set('Accept', 'application/json').set('Cookie', [`${cookieAdmin.name}=${cookieAdmin.value}`])
                 .field('title', mockProducts.title)
                 .field('description', mockProducts.description)
@@ -489,7 +489,20 @@ describe('Testing API', () => {
 
         })
 
+        it('/api/users/:uid debe devolver error si el usuario no ha cargado los documentos', async () => {
+            //el usuario previamente no es premium
+            //el usuario previamente cargo 1 solo documento
 
+            const { _body } = await requester.get('/api/sessions/current').set('Cookie', [`${cookieUser.name}=${cookieUser.value}`])
+
+            const uid = _body.payload._id
+
+            const { statusCode, _body: body } = await requester.put(`/api/users/premium/${uid}`).set('Cookie', [`${cookieUser.name}=${cookieUser.value}`])
+
+            expect(statusCode).to.be.eql(422)
+
+            expect(body.message).to.be.eql(`Error: User did not complete uploading required documentation`)
+        })
 
         it('/api/users/:uid/documents debe poder subir documento Comprobante de domicilio', async () => {
 
@@ -546,14 +559,47 @@ describe('Testing API', () => {
             expect(statusCode).to.be.eq(201)
         })
 
-        it('/api/users/:uid debe devolver error si el usuario no ha cargado los documentos', async () => {
-            expect("incomplete").to.be.eql("complete")
-        })
+
         it('/api/users/:uid debe actualizar a un usuario como premiun solo si ha cargado los 3 documentos', async () => {
-            expect("incomplete").to.be.eql("complete")
+            //el usuario previamente no es premium
+            //el usuario previamente cargo todos los documentos
+
+            const { _body } = await requester.get('/api/sessions/current').set('Cookie', [`${cookieUser.name}=${cookieUser.value}`])
+            expect(_body.payload.role).to.be.eql(`user`)
+
+            const uid = _body.payload._id
+
+            const { statusCode, _body: body } = await requester.put(`/api/users/premium/${uid}`).set('Cookie', [`${cookieUser.name}=${cookieUser.value}`])
+
+            expect(statusCode).to.be.eql(200)
+            expect(body.newRole).to.be.eql(`premium`)
+
+            
+            const { _body: newBody } = await requester.get('/api/sessions/current').set('Cookie', [`${cookieUser.name}=${cookieUser.value}`])
+
+            expect(newBody.payload.role).to.be.eql(`premium`)
+
+
         })
         it('/api/users/:uid debe de poder actualizar a un usuario premiun como user', async () => {
-            expect("incomplete").to.be.eql("complete")
+            //el usuario previamente es premium
+
+            const { _body } = await requester.get('/api/sessions/current').set('Cookie', [`${cookieUser.name}=${cookieUser.value}`])
+            expect(_body.payload.role).to.be.eql(`premium`)
+
+            const uid = _body.payload._id
+
+            const { statusCode, _body: body } = await requester.put(`/api/users/premium/${uid}`).set('Cookie', [`${cookieUser.name}=${cookieUser.value}`])
+
+            expect(statusCode).to.be.eql(200)
+            expect(body.newRole).to.be.eql(`user`)
+
+            
+            const { _body: newBody } = await requester.get('/api/sessions/current').set('Cookie', [`${cookieUser.name}=${cookieUser.value}`])
+
+            expect(newBody.payload.role).to.be.eql(`user`)
+
+
         })
     })
 
@@ -569,13 +615,13 @@ describe('Testing API', () => {
 })
 
 async function borrarArchivo(filePath) {
-    try {        
-        if(!filePath){
+    try {
+        if (!filePath) {
             return
         }
         await fs.unlink(filePath);
     } catch (err) {
-        
+
         logger.error(
             `❌ ~ runValidation ~ err:
             error eliminando el archivo ${filePath} , ${err}
