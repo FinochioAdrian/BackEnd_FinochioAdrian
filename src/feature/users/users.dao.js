@@ -9,7 +9,7 @@ export default class UsersDAO {
   // find all user
   async getAllUsers() {
     try {
-      return await Users.find().lean();
+      return await Users.find({},{ first_name: 1, last_name: 1, age: 1, email: 1, role: 1 }).lean();
     } catch (error) {
       logger.error("❌ ~ UsersDAO ~ getAllUser ~ error:", error);
       throw error;

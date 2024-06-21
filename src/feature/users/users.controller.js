@@ -36,7 +36,7 @@ async function switchUserRole(req, res, next) {
 async function getAll(req, res, next) {
     try {
         const users = await Users.getAllUsers()
-        return res.send({ result: "succes", newRole: savedUser.role })
+        return res.send({ result: "succes", payload:users})
     } catch (error) {
         next(error)
     }

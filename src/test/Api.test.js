@@ -574,7 +574,7 @@ describe('Testing API', () => {
             expect(statusCode).to.be.eql(200)
             expect(body.newRole).to.be.eql(`premium`)
 
-            
+
             const { _body: newBody } = await requester.get('/api/sessions/current').set('Cookie', [`${cookieUser.name}=${cookieUser.value}`])
 
             expect(newBody.payload.role).to.be.eql(`premium`)
@@ -594,11 +594,35 @@ describe('Testing API', () => {
             expect(statusCode).to.be.eql(200)
             expect(body.newRole).to.be.eql(`user`)
 
-            
+
             const { _body: newBody } = await requester.get('/api/sessions/current').set('Cookie', [`${cookieUser.name}=${cookieUser.value}`])
 
             expect(newBody.payload.role).to.be.eql(`user`)
 
+
+        })
+
+        it('/api/users/ deberá obtener todos los usuarios, éste sólo debe devolver los datos principales', async () => {
+
+            const response  = await requester.get('/api/users/').set('Cookie', [`${cookieUser.name}=${cookieUser.value}`])
+            expect(response.statusCode).to.be.eq(200)
+            expect(response._body.payload).to.be.an('Array').to.not.be.empty
+
+
+     
+
+            
+            expect(response._body.payload).to.deep.satisfy((elements) => {
+                elements.forEach((element) => {
+                    expect(element).to.have.all.keys('_id', 'age', 'email', 'first_name', 'last_name', 'role');
+                    expect(element.age).to.be.a('number');
+                    expect(element.email).to.be.a('string');
+                    expect(element.first_name).to.be.a('string');
+                    expect(element.last_name).to.be.a('string');
+                    expect(element.role).to.be.a('string');
+                });
+                return true; 
+            });
 
         })
     })
