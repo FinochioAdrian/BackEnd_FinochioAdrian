@@ -9,7 +9,7 @@
 | 14_*          |   pending     | Modify |  modify ruta /loggerTest|
 | 18_06         |   Finished     | Modify |  modify /api/users/premium/:uid para que actualize al usuario como premium solo si ha cargado los siguientes documentos identificacion, Comprobante de domicilio, comprobante de estado de cuenta, devolver error indicando que el usuario no ha terminado de procesar su documentacion. |
 |19_01          |   Finished   | Add    |In /api/users add router GET / deberá retornar todos los usuarios, solo datos principales (name,email,rol)|
-|19_02          |   started   | Add    |In /api/users add router Delete / deberá limpiar a todos los usuarios que no hayan tenido conexión en los utlimos 2 días, Deberá enviar correo indicando al usuario que su cuenta ha sido eliminada por inactividad|
+|19_02          |   Finished   | Add    |In /api/users add router Delete / deberá limpiar a todos los usuarios que no hayan tenido conexión en los utlimos 2 días, Deberá enviar correo indicando al usuario que su cuenta ha sido eliminada por inactividad|
 |19_03          |   unstarted   | Add    | View /views/  visualizar , modificar rol, y eliminar|
 |19_04          |   unstarted   | Modify | Delete /api/products/:pid para que cuando el producto que se elimina si pertenece a un usuario premiun, le envie un correo indicandole que el producto fue eliminado |
 |19_05          |   unstarted   | Update | finalizar las vistas para el flujo completo de compra|
