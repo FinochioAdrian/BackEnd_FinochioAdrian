@@ -7,6 +7,12 @@ export default class UsersRepository {
     const result = await this.dao.getAllUsers()
     return result
   }
+ 
+  getAllUsersInactivity = async (date) => {
+
+    const result = await this.dao.getAllUsersInactivity(date)
+    return result
+  }
   getUserByEmail = async (email) => {
 
     const regexEmail = new RegExp(email, 'i')
@@ -75,4 +81,10 @@ export default class UsersRepository {
     const result = await this.dao.newPassword(UserToInsert);
     return result;
   };
+
+
+  deleteManyUsers = async (usersArray)=>{
+    const result = await this.dao.deleteManyUsers(usersArray)
+    return result
+  }
 }

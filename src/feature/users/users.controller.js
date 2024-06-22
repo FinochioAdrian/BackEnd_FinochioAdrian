@@ -1,5 +1,6 @@
+import { sendEmail, transportGmailNodemailer } from "../../utils/sendEmail.js";
 import { usersService as Users } from "./repository/users.service.js";
-
+import envConfig from "../../config/config.js";
 async function switchUserRole(req, res, next) {
     try {
 
@@ -12,11 +13,11 @@ async function switchUserRole(req, res, next) {
         const user = await Users.getUserByIdAllData(uid)
 
         const { documents } = user
-        
 
 
-        const requiered = ["identification",'proofOfResidence', 'accountStatement'];
-        const documentsArray = documents.map(document=>document.name)
+
+        const requiered = ["identification", 'proofOfResidence', 'accountStatement'];
+        const documentsArray = documents.map(document => document.name)
 
         const isSubset = requiered.every(element => documentsArray.includes(element));
 
@@ -36,7 +37,52 @@ async function switchUserRole(req, res, next) {
 async function getAll(req, res, next) {
     try {
         const users = await Users.getAllUsers()
-        return res.send({ result: "succes", payload:users})
+        return res.send({ result: "succes", payload: users })
+    } catch (error) {
+        next(error)
+    }
+}
+async function deleteUsersForInactivity(req, res, next) {
+    try {
+
+        //intervalo de tiempo 
+        const intervaloDeTiempoEnMiliSeconds = 2* 24 * 60 * 60 * 1000
+        //fecha Actual    
+        const currentDate = new Date();
+        const fechaBusqueda = new Date(currentDate.getTime() - intervaloDeTiempoEnMiliSeconds)
+        // busqueda de usuarios no premiun y no admin que no se hallan conectado en el intervalo de tiempo
+        const users = await Users.getAllUsersInactivity(fechaBusqueda)
+
+        const emailSend = []
+        const emailPromises = users.map(async (user) => {
+            let message = `
+        <div> 
+            <h2>Estimado usuario: <b>${user.last_name} ${user.first_name}</b></h2>
+            <p>Su cuenta en nuestra tienda virtual <b> ${envConfig.TIENDA}</b>, ha sido <b> ELIMINADA </b> por inactividad</p>
+         </div>
+        `
+
+            const email = {
+                from: envConfig.USERMAIL,
+                to: user.email,
+                subject: `Eliminación de Cuenta de ${envConfig.TIENDA}`,
+                html: message
+            }
+
+            const resp = await sendEmail(transportGmailNodemailer, email)
+            emailSend.push(user.email)
+        });
+
+        await Promise.all(emailPromises);
+        let cantUserDelete=emailSend.length
+        if (emailSend.length > 0) { 
+            const userDelete = await Users.deleteManyUsers(emailSend)
+            cantUserDelete=userDelete.deletedCount
+         }
+
+        return res.status(200).send({ result: "succes", payload: {cantUserDelete} })
+
+
     } catch (error) {
         next(error)
     }
@@ -88,4 +134,4 @@ async function setDocuments(req, res, next) {
     }
 }
 
-export { switchUserRole, getAll, getUser, setDocuments }
+export { switchUserRole, getAll, getUser, setDocuments, deleteUsersForInactivity }

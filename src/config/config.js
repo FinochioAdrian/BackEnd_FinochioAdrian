@@ -18,5 +18,6 @@ export default {
   PERSISTENCE: process.env.PERSISTENCE,
   HOST: process.env.HOST,
   PASSNODEMAILER:process.env.PASSNODEMAILER,
-  USERMAIL:process.env.USERMAIL
+  USERMAIL:process.env.USERMAIL,
+  TIENDA:process.env.TIENDA
 };

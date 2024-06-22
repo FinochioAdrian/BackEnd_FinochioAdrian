@@ -9,13 +9,24 @@ export default class UsersDAO {
   // find all user
   async getAllUsers() {
     try {
-      return await Users.find({},{ first_name: 1, last_name: 1, age: 1, email: 1, role: 1 }).lean();
+      return await Users.find({},{ first_name: 1, last_name: 1, age: 1, email: 1, role: 1 , last_connection:1}).lean();
     } catch (error) {
       logger.error("❌ ~ UsersDAO ~ getAllUser ~ error:", error);
       throw error;
     }
   }
-
+  // find all user when last_connection is grow time in seconds
+  async getAllUsersInactivity(date) {
+    try {
+       
+      return await Users.find({'last_connection.date':{$lte: date },role:{$eq:"user"}},{ first_name: 1, last_name: 1, age: 1, email: 1, role: 1 , last_connection:1}).lean();
+      
+    } catch (error) {
+      logger.error("❌ ~ UsersDAO ~ getAllUser ~ error:", error);
+      throw error;
+    }
+  }
+  
   // get user by email
   async getUserByEmail(user) {
     try {
@@ -26,7 +37,7 @@ export default class UsersDAO {
       throw error;
     }
   }
-
+  
   // get user by credentials
   async getUserByCreds(user) {
     try {
@@ -38,7 +49,7 @@ export default class UsersDAO {
       throw error;
     }
   }
-
+  
   // insert new user
   async insert(userData) {
     try {
@@ -50,7 +61,7 @@ export default class UsersDAO {
       if (newuser) {
         await cart.save()
         return newuser
-
+        
       }
       return newuser
     } catch (error) {
@@ -58,7 +69,7 @@ export default class UsersDAO {
       throw error;
     }
   }
-
+  
   /**
    * get user by id return short data
    *  */ 
@@ -88,7 +99,7 @@ export default class UsersDAO {
       throw error;
     }
   }
-
+  
   async newPassword(user) {
     try {
       return await Users.findOneAndUpdate({ email: user.email }, { password: user.password }).lean()
@@ -107,18 +118,18 @@ export default class UsersDAO {
     }
   }
   async updateLast_connection(user) {
-
+    
     try {
-
+      
       const result = await Users.findOneAndUpdate(
         { _id: user?.id || user._id },
         { $set: { last_connection: user.last_connection } },
         { new: true }
       ).lean();
-
-    
-
-
+      
+      
+      
+      
       return result
     } catch (error) {
       logger.error("❌ ~ newPassword ~ error:", error);
@@ -126,24 +137,34 @@ export default class UsersDAO {
     }
   }
   async updateDocumentation(user) {
-
+    
     try {
-
+      
       const result = await Users.findOneAndUpdate(
         { _id: user?.id || user._id },
         { $set: { documents: user.documents } },
         { new: true }
       ).lean();
-
-    
-
-
+      
+      
+      
+      
       return result
     } catch (error) {
       logger.error("❌ ~ newPassword ~ error:", error);
       throw error;
     }
   }
+  
+  async deleteManyUsers(usersArray) {
+    try {
+      return await Users.deleteMany({ email: { $in: usersArray } });
 
+      
+    } catch (error) {
+      logger.error("❌ ~ UsersDAO ~ deleteManyUsers ~ error:", error);
+      throw error;
+    }
+  }
 }
 

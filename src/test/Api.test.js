@@ -602,7 +602,7 @@ describe('Testing API', () => {
 
         })
 
-        it('/api/users/ deberá obtener todos los usuarios, éste sólo debe devolver los datos principales', async () => {
+        it('GET /api/users/ deberá obtener todos los usuarios, éste sólo debe devolver los datos principales', async () => {
 
             const response  = await requester.get('/api/users/').set('Cookie', [`${cookieUser.name}=${cookieUser.value}`])
             expect(response.statusCode).to.be.eq(200)
@@ -614,15 +614,28 @@ describe('Testing API', () => {
             
             expect(response._body.payload).to.deep.satisfy((elements) => {
                 elements.forEach((element) => {
-                    expect(element).to.have.all.keys('_id', 'age', 'email', 'first_name', 'last_name', 'role');
+                    expect(element).to.have.all.keys('_id', 'age', 'email', 'first_name', 'last_name', 'role', 'last_connection');
                     expect(element.age).to.be.a('number');
                     expect(element.email).to.be.a('string');
                     expect(element.first_name).to.be.a('string');
                     expect(element.last_name).to.be.a('string');
-                    expect(element.role).to.be.a('string');
+                    expect(element.role).to.be.a('string');   
+                    expect(element.last_connection).to.be.a('object');
                 });
                 return true; 
             });
+
+        })
+        it('DELETE /api/users/ deberá eliminar todos los usuarios que no hayan tenido conexion en los ultimos 2 días', async () => {
+
+            const responseAllUsers  = await requester.get('/api/users/').set('Cookie', [`${cookieAdmin.name}=${cookieAdmin.value}`])
+
+            
+
+            const responseDeleteUsers  = await requester.delete('/api/users/').set('Cookie', [`${cookieAdmin.name}=${cookieAdmin.value}`])
+
+            expect(responseDeleteUsers.statusCode).to.be.eq(200)
+            expect(responseDeleteUsers._body.payload).to.be.an('object').to.have.property("cantUserDelete")
 
         })
     })
