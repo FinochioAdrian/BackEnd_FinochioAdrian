@@ -4,6 +4,7 @@ import { productsService as Products } from "../products/repository/index.js";
 import {cartsService} from "../carts/repository/index.js";
 import { logger } from "../../utils/loggerMiddleware/logger.js";
 import envConfig from "../../config/config.js"
+import { usersService as Users } from "../users/repository/users.service.js";
 async function getHome(req, res) {
   try {
     const user = req.user;
@@ -65,6 +66,52 @@ async function getProduct(req, res) {
     return res.render("product", { title: "Product", product, user });
   } catch (error) {
     logger.error("❌ ~ product ~ error:", error);
+  }
+}
+async function adminUsers(req, res) {
+  try {
+    const user = req.user;
+    const usuarios = await Users.getAllUsers()
+
+    return res.render("adminUsers", { title: "Administrar Usuarios",usuarios:usuarios,user });
+  } catch (error) {
+    logger.error("❌ ~ product ~ error:", error);
+    next (error)
+
+  }
+}
+async function adminUsers_modificarRol(req, res, next) {
+  try {
+    const {uid} = req.params
+
+    const user = await Users.getUserByID(uid)
+
+    user.role = user.role == "user" ? "premium" : "user"
+
+    const savedUser = await Users.update(user)
+
+    return res.redirect(`/adminUsers`);
+  } catch (error) {
+    logger.error("❌ ~ product ~ error:", error);
+    next (error)
+  }
+}
+async function adminUsers_delete(req, res, next) {
+  try {
+    const {uid} = req.params
+
+    const user = await Users.getUserByIdAllData(uid)
+
+
+    
+    const result = await Users.deleteUser(user)
+
+    
+
+    return res.redirect(`/adminUsers`);
+  } catch (error) {
+    logger.error("❌ ~ product ~ error:", error);
+    next (error)
   }
 }
 
@@ -266,5 +313,8 @@ export {
   getRegister,
   getChatBot,
   getPasswordReset,
-  findEmail
+  findEmail,
+  adminUsers,
+  adminUsers_modificarRol,
+  adminUsers_delete
 };

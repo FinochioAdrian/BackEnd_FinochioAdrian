@@ -35,6 +35,31 @@ router.get(
   auth(),
   ViewsController.getProduct
 );
+// Define a GET route for the "/adminUsers" URL that renders the panel adminUser  view
+router.get(
+  "/adminUsers",
+  passportCall("jwt"),
+  auth(['admin']),
+  ViewsController.adminUsers
+);
+
+// Define a GET route for the "/adminUsers/modificarRol/:uid"  this URL modify rol user between user and premium
+router.get(
+  "/adminUsers/modificarRol/:uid",
+  passportCall("jwt"),
+  auth(['admin']),
+  viewValidatorMiddleware("isID"),
+  runValidation,
+  ViewsController.adminUsers_modificarRol
+);
+
+// Define a GET route for the "/adminUsers/delete/:uid" this URL deleted one user by user id :UID
+router.get(
+  "/adminUsers/delete/:uid",
+  passportCall("jwt"),
+  auth(['admin']),
+  ViewsController.adminUsers_delete
+);
 
 // Define a GET route for the "/realTimeProducts" URL that renders the realTimeProducts view
 router.get(
@@ -62,8 +87,9 @@ router.post(
   passportCall("jwt"),
   auth(["user"]),
   viewValidatorMiddleware("isCID"),
+  runValidation,
   viewValidatorMiddleware("isPID"),
-
+  runValidation,
   ViewsController.postProductInCart
 );
 

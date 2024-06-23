@@ -166,5 +166,24 @@ export default class UsersDAO {
       throw error;
     }
   }
+  async getUsersByEmail(usersArray) {
+    try {
+      return await Users.find({ email: { $in: usersArray } });
+      
+    } catch (error) {
+      logger.error("❌ ~ UsersDAO ~ deleteManyUsers ~ error:", error);
+      throw error;
+    }
+  }
+  async deleteUser(user) {
+    try {
+      return await Users.deleteOne({ email: user.email });
+
+      
+    } catch (error) {
+      logger.error("❌ ~ UsersDAO ~ deleteUser ~ error:", error);
+      throw error;
+    }
+  }
 }
 

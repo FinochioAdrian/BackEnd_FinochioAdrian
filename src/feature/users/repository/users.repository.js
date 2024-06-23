@@ -1,3 +1,5 @@
+import { BorrarDocumentsAlmacenados } from "../../../utils/files.js";
+import { cartsService } from "../../carts/repository/index.js";
 import UserDto from "../user.dto.js";
 export default class UsersRepository {
   constructor(dao) {
@@ -7,7 +9,7 @@ export default class UsersRepository {
     const result = await this.dao.getAllUsers()
     return result
   }
- 
+
   getAllUsersInactivity = async (date) => {
 
     const result = await this.dao.getAllUsersInactivity(date)
@@ -49,7 +51,7 @@ export default class UsersRepository {
   updateLast_connection = async (userData) => {
 
     const UserToInsert = new UserDto(userData);
-    
+
     const result = await this.dao.updateLast_connection(UserToInsert);
 
     if (!result) return null;
@@ -58,7 +60,7 @@ export default class UsersRepository {
   updateDocumentation = async (userData) => {
 
     const UserToInsert = new UserDto(userData);
-    
+
     const result = await this.dao.updateDocumentation(UserToInsert);
 
     if (!result) return null;
@@ -82,8 +84,29 @@ export default class UsersRepository {
     return result;
   };
 
+  deleteUser = async (user) => {
 
-  deleteManyUsers = async (usersArray)=>{
+    await cartsService.remove(user.cart)
+    const documents = user.documents.map((document) => document.reference)
+
+    await BorrarDocumentsAlmacenados(documents)
+    const UserToDelete = new UserDto(user);
+    const result = await this.dao.deleteUser(UserToDelete)
+    return result
+
+  }
+
+  deleteManyUsers = async (usersArray) => {
+    const users = await this.dao.getUsersByEmail(usersArray)
+
+    for (const user of users) {
+      await cartsService.remove(user.cart)
+      let doc=[]
+      for (const document of user.documents) {
+        doc.push(document.reference)
+      }
+      await BorrarDocumentsAlmacenados(doc)
+    }
     const result = await this.dao.deleteManyUsers(usersArray)
     return result
   }

@@ -39,6 +39,13 @@ export default function validate(method) {
         .custom((value) => (isValidObjectId(value) ? value : false))
         .withMessage("Search parameter cart 'id':  is not a valid identifier.");
     }
+    case "isID": {
+      return param("uid")
+        .exists()
+        .withMessage("Search parameter 'id' is required")
+        .custom((value) => (isValidObjectId(value) ? value : false))
+        .withMessage("Search parameter 'id':  is not a valid identifier.");
+    }
     
   }
 }

@@ -75,7 +75,8 @@ async function deleteUsersForInactivity(req, res, next) {
 
         await Promise.all(emailPromises);
         let cantUserDelete=emailSend.length
-        if (emailSend.length > 0) { 
+        if (emailSend.length > 0) {
+            
             const userDelete = await Users.deleteManyUsers(emailSend)
             cantUserDelete=userDelete.deletedCount
          }
