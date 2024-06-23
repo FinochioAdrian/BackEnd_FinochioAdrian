@@ -2,8 +2,10 @@ import { generateListProducts } from "../../utils/Mocks.js";
 import CustomError from "../../utils/errors/customError.js";
 import EErrors from "../../utils/errors/enums.js";
 import { customCauseErrorInfo } from "../../utils/errors/info.js";
+import { sendEmail, transportGmailNodemailer } from "../../utils/sendEmail.js";
+import { usersService as Users } from "../users/repository/users.service.js";
 import { productsService as Products } from "./repository/index.js";
-
+import envConfig from '../../config/config.js'
 async function getAll(req, res, next) {
   try {
     const limit = req.query?.limit || 10;
@@ -170,40 +172,105 @@ async function remove(req, res, next) {
     let { user } = req;
 
     // Delete product
-    if (user.role == "admin") {
-      const productRemove = await Products.remove({ _id: pid });
-
-      return res.status(201).send({
-        status: "success",
-        msg: `Product with ID ${pid} has been deleted `,
-      });
-    }
 
     const findProduct = await Products.getById(pid)
+
     if (!findProduct) {
       return res.status(404).send({ status: "fail", msg: `No product found with ID ${pid}` });
     }
+
+
+    //extraemos el id del creador del producto
     const { owner: ownerFind } = findProduct
 
-    if (!ownerFind.admin && user._id == ownerFind._id) {
-      const productRemove = await Products.remove({ _id: pid });
-      if (!productRemove) {
-        return res.status(404).send({
-          status: "fail", msg: `No product found with ID ${pid}`
-        });
-      }
-      return res.status(201).send({
-        status: "success",
-        msg: `Product with ID ${pid} has been deleted `,
+
+    if (user.role != "admin" && user._id != ownerFind._id) {
+      return res.status(403).send({
+        status: "error",
+        msg: ` "You do not have permission to access this resource." `,
       });
+    }
+    let productRemove
+    if (user.role == "admin") {
+
+      productRemove = await Products.remove(findProduct);
+
+
+    }
+    if (user.role == "premium" && !ownerFind.admin) {
+
+      productRemove = await Products.remove(findProduct);
+
+    } else
+      if (user.role == "user") {
+        return res.status(403).send({
+          status: "error",
+          msg: ` "You do not have permission to access this resource." `,
+        });
+
+      }
+
+    if (!productRemove) {
+      return res.status(404).send({
+        status: "fail", msg: `No product found with ID ${pid}`
+      });
+    }
+
+    const userFind = await Users.getUserByID(ownerFind._id)
+    if (userFind?.role == 'premium') {
+      let message = `
+        <div> 
+            <h2>Estimado usuario: <b>${user.last_name} ${user.first_name}</b></h2>
+            <p>Un producto que usted ha añadido en nuestra tienda virtual <b> ${envConfig.TIENDA}</b>, ha sido <b> ELIMINADO </b> </p>
+                  <table class="max-width:600px; margin: 0 auto;">
+                    <thead>
+                      <tr>
+                        <th>Id Producto</th>
+                        <th>Producto</th>
+                        <th>Precio</th>
+                        <th>Codigo</th>
+                        <th>Estado</th>
+                        <th>Stock</th>
+                        <th>Categoria</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td>${findProduct._id}</td>
+                        <td>${findProduct.title}</td>
+                        <td>${findProduct.price}</td>
+                        <td>${findProduct.code}</td>
+                        <td>${findProduct.status}</td>
+                        <td>${findProduct.stock}</td>
+                        <td>${findProduct.category}</td>
+                      </tr>
+                    </tbody>
+                  </table>
+
+         </div>
+        `
+
+      const mail = {
+        from: envConfig.USERMAIL,
+        to: userFind.email,
+        subject: `Eliminación de Producto de ${envConfig.TIENDA}`,
+        html: message
+      }
+
+      const resp = await sendEmail(transportGmailNodemailer, mail)
+
+
+
+
+
     }
 
 
 
 
-    return res.status(403).send({
-      status: "error",
-      msg: ` "You do not have permission to access this resource." `,
+    return res.status(201).send({
+      status: "success",
+      msg: `Product with ID ${pid} has been deleted `,
     });
 
 

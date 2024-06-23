@@ -44,6 +44,10 @@ export default class ProductRepository {
   };
   remove = async (product) => {
     let productToRemove = new ProductDTO(product)
+    //TODO falta eliminar las imagenes
+    if (product.thumbnails.lentght > 0){
+      //Eliminar imagenes
+    }
     let result = await this.dao.remove(productToRemove);
     return result;
   };

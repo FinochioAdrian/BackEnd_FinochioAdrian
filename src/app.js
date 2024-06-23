@@ -2,6 +2,7 @@ import express from "express";
 import swaggerUiExpress from 'swagger-ui-express'
 import swaggerJsdoc from 'swagger-jsdoc'
 import __dirname, { errorHandler, swaggerOptions } from "./utils.js";
+import path from 'node:path'
 import handlebars_config from "./config/handlebars.config.js";
 import IOconfig from "./config/IO.config.js";
 import passport from "passport";
@@ -61,7 +62,8 @@ app.use(passport.initialize());
 app.use(flash());
 // Manejo de Handlebars
 handlebars_config(app);
-app.use(express.static(__dirname + "/public"));
+app.use(express.static(path.join(__dirname, 'public')));
+
 // Incio y manejo de swagger
 const specs = swaggerJsdoc(swaggerOptions)
 app.use('/apidocs',swaggerUiExpress.serve,swaggerUiExpress.setup(specs))

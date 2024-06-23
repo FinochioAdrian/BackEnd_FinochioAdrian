@@ -60,7 +60,7 @@ describe('Testing API', () => {
 
         const products = await productModel.find()
         await BorrarImagenesAlmacenadas(products)
-        await productModel.deleteMany({})
+        await productModel.deleteMany({}) 
         await BorrarDocumentsAlmacenados(documents)
         this.timeout = 10000
 
@@ -317,7 +317,7 @@ describe('Testing API', () => {
 
 
         })
-        it("put /api/sessions/products permite modificar un producto con imagen", async () => {
+        it("put /api/products permite modificar un producto con imagen", async () => {
             let newPrice = 50000
             let result = await requester.get(`/api/products/${pid}`).set('Accept', 'application/json').set('Cookie', [`${cookieAdmin.name}=${cookieAdmin.value}`])
             const mockProducts = { ...result._body.product, price: newPrice }
@@ -334,6 +334,45 @@ describe('Testing API', () => {
             expect(result._body.product.price).to.be.eq(newPrice)
 
 
+
+        })
+        it("Delete /api/products/:pid permite eliminar un producto con su imagen", async (done) => {
+            try {
+                
+            
+            const { statusCode: code, _body: body } = await requester.post("/api/products/").set('Accept', 'application/json').set('Cookie', [`${cookieUserPremiun.name}=${cookieUserPremiun.value}`])
+                .field('title', mockProducts.title)
+                .field('description', mockProducts.description)
+                .field('code', 'A1B2C3')
+                .field('price', mockProducts.price)
+                .field('status', mockProducts.status)
+                .field('stock', mockProducts.stock)
+                .field('category', mockProducts.category)
+                .attach("thumbnails", mockProducts.thumbnails[0])
+
+
+            expect(code).to.be.eq(201)
+            expect(body).to.be.an("object").and.to.have.property('payload')
+            const pidA1B2C3 = body.payload._id
+            
+            console.log("🚀 ~ it ~ code:", code)
+            
+            
+            
+            
+            let result = await requester.delete(`/api/products/${pidA1B2C3}`).set('Accept', 'application/json').set('Cookie', [`${cookieAdmin.name}=${cookieAdmin.value}`])
+           
+            console.log("🚀 ~ it ~ result.statusCode:", result.statusCode)
+            
+            expect(result.statusCode).to.be.eq(201)
+            expect(result._body).to.be.an("object").and.to.have.property('msg')
+
+
+
+            done()
+        } catch (error) {
+            done(error)
+        }
 
         })
 
@@ -626,17 +665,22 @@ describe('Testing API', () => {
             });
 
         })
-        it('DELETE /api/users/ deberá eliminar todos los usuarios que no hayan tenido conexion en los ultimos 2 días', async () => {
-
-            const responseAllUsers  = await requester.get('/api/users/').set('Cookie', [`${cookieAdmin.name}=${cookieAdmin.value}`])
+        it('DELETE /api/users/ deberá eliminar todos los usuarios que no hayan tenido conexion en los ultimos 2 días', async (done) => {
+             
+            try {
+                const responseAllUsers  = await requester.get('/api/users/').set('Cookie', [`${cookieAdmin.name}=${cookieAdmin.value}`])
 
             
 
-            const responseDeleteUsers  = await requester.delete('/api/users/').set('Cookie', [`${cookieAdmin.name}=${cookieAdmin.value}`])
-
-            expect(responseDeleteUsers.statusCode).to.be.eq(200)
-            expect(responseDeleteUsers._body.payload).to.be.an('object').to.have.property("cantUserDelete")
-
+                const responseDeleteUsers  = await requester.delete('/api/users/').set('Cookie', [`${cookieAdmin.name}=${cookieAdmin.value}`])
+    
+                expect(responseDeleteUsers.statusCode).to.be.eq(200)
+                expect(responseDeleteUsers._body.payload).to.be.an('object').to.have.property("cantUserDelete")
+                done()
+            } catch (error) {
+                done(error)
+            }
+           
         })
     })
 
