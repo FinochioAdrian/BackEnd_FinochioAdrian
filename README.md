@@ -11,7 +11,7 @@
 |19_01          |   Finished   | Add    |In /api/users add router GET / deberá retornar todos los usuarios, solo datos principales (name,email,rol)|
 |19_02          |   Finished   | Add    |In /api/users add router Delete / deberá limpiar a todos los usuarios que no hayan tenido conexión en los utlimos 2 días, Deberá enviar correo indicando al usuario que su cuenta ha sido eliminada por inactividad|
 |19_03          |   Finished   | Add    | View /views/  visualizar , modificar rol, y eliminar|
-|19_04          |   started   | Modify | Delete /api/products/:pid para que cuando el producto que se elimina si pertenece a un usuario premiun, le envie un correo indicandole que el producto fue eliminado |
+|19_04          |   Finished   | Modify | Delete /api/products/:pid para que cuando el producto que se elimina si pertenece a un usuario premiun, le envie un correo indicandole que el producto fue eliminado |
 |19_05          |   unstarted   | Update | finalizar las vistas para el flujo completo de compra|
 |19_06          |   unstarted   | deploy | realizar el despliegue de tu aplicativo en la plataforma|
 | 14_*          |   pending     | Modify |  modify all console.log|
