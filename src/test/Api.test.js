@@ -50,7 +50,6 @@ describe('Testing API', () => {
         await usersModel.deleteMany({})
         await cartModel.deleteMany({})
         const products = await productModel.find()
-        console.log("🚀 ~ products:", products)
         
         await BorrarImagenesAlmacenadas(products)
         await productModel.deleteMany({})
@@ -61,7 +60,7 @@ describe('Testing API', () => {
 
 
         const products = await productModel.find()
-        console.log("🚀 ~ products:", products)
+        
         
         await BorrarImagenesAlmacenadas(products)
         await productModel.deleteMany({}) 
@@ -221,7 +220,7 @@ describe('Testing API', () => {
         }
         let pid
 
-        it("post /api/sessions/products no permite añadir un producto (con imagen) a usuarios sin premium", async () => {
+        it("post /api/products no permite añadir un producto (con imagen) a usuarios sin premium", async () => {
 
 
             const { statusCode, _body } = await requester.post("/api/products/").set('Accept', 'application/json').set('Cookie', [`${cookieUser.name}=${cookieUser.value}`])
@@ -240,7 +239,7 @@ describe('Testing API', () => {
             expect(_body).to.have.property("error").with.eql('No permissions')
 
         })
-        it("post /api/sessions/products permite añadir un producto con imagen a usuarios premium ", async () => {
+        it("post /api/products permite añadir un producto con imagen a usuarios premium ", async () => {
 
             const { statusCode: code, _body: body } = await requester.post("/api/products/").set('Accept', 'application/json').set('Cookie', [`${cookieUserPremiun.name}=${cookieUserPremiun.value}`])
                 .field('title', mockProducts.title)
@@ -261,7 +260,7 @@ describe('Testing API', () => {
 
 
         })
-        it("post /api/sessions/products permite añadir un producto con imagen a usuarios admin", async () => {
+        it("post /api/products permite añadir un producto con imagen a usuarios admin", async () => {
 
             const { statusCode: code, _body: body } = await requester.post("/api/products/").set('Accept', 'application/json').set('Cookie', [`${cookieAdmin.name}=${cookieAdmin.value}`])
                 .field('title', mockProducts.title)
@@ -354,7 +353,6 @@ describe('Testing API', () => {
                 .field('category', mockProducts.category)
                 .attach("thumbnails", mockProducts.thumbnails[0])
 
-                console.log("🚀 ~ it ~ body:", body)
 
             expect(code).to.be.eq(201)
             expect(body).to.be.an("object").and.to.have.property('payload')
@@ -366,7 +364,6 @@ describe('Testing API', () => {
             
             let result = await requester.delete(`/api/products/${pidA1B2C3}`).set('Accept', 'application/json').set('Cookie', [`${cookieAdmin.name}=${cookieAdmin.value}`])
            
-            console.log("🚀 ~ it ~ result._body:", result._body)
             
             expect(result.statusCode).to.be.eq(201)
             expect(result._body).to.be.an("object").and.to.have.property('msg')
