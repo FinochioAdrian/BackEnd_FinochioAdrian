@@ -4,6 +4,7 @@ export async function borrarArchivo(filePath) {
         if (!filePath) {
             return
         }
+        
         await fs.unlink(filePath);
     } catch (err) {
         if (err.code === 'ENOENT') {

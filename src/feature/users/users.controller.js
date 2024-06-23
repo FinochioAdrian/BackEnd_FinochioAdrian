@@ -46,7 +46,7 @@ async function deleteUsersForInactivity(req, res, next) {
     try {
 
         //intervalo de tiempo 
-        const intervaloDeTiempoEnMiliSeconds = 2* 24 * 60 * 60 * 1000
+        const intervaloDeTiempoEnMiliSeconds = 2 * 24 * 60 * 60 * 1000
         //fecha Actual    
         const currentDate = new Date();
         const fechaBusqueda = new Date(currentDate.getTime() - intervaloDeTiempoEnMiliSeconds)
@@ -74,14 +74,14 @@ async function deleteUsersForInactivity(req, res, next) {
         });
 
         await Promise.all(emailPromises);
-        let cantUserDelete=emailSend.length
+        let cantUserDelete = emailSend.length
         if (emailSend.length > 0) {
-            
-            const userDelete = await Users.deleteManyUsers(emailSend)
-            cantUserDelete=userDelete.deletedCount
-         }
 
-        return res.status(200).send({ result: "succes", payload: {cantUserDelete} })
+            const userDelete = await Users.deleteManyUsers(emailSend)
+            cantUserDelete = userDelete.deletedCount
+        }
+
+        return res.status(200).send({ result: "succes", payload: { cantUserDelete } })
 
 
     } catch (error) {
@@ -115,10 +115,17 @@ async function setDocuments(req, res, next) {
         Object.keys(files).forEach(key => {
             const fileArray = files[key];
             fileArray.forEach(file => {
-                let newPath = file.path.replace(/\\/g, "/");
+
+
+                let fullPath = file.path.replace(/\\/g, "/");
+
+                const parts = fullPath.split('/public');
+                const result = parts[1];
+
+
                 resultArray.push({
                     name: key,
-                    reference: newPath
+                    reference: result
                 });
             });
         });

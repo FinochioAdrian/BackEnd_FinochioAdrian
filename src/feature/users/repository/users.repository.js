@@ -1,6 +1,9 @@
 import { BorrarDocumentsAlmacenados } from "../../../utils/files.js";
 import { cartsService } from "../../carts/repository/index.js";
 import UserDto from "../user.dto.js";
+
+import __dirname from "../../../utils.js";
+import path from 'node:path'
 export default class UsersRepository {
   constructor(dao) {
     this.dao = dao;
@@ -87,7 +90,7 @@ export default class UsersRepository {
   deleteUser = async (user) => {
 
     await cartsService.remove(user.cart)
-    const documents = user.documents.map((document) => document.reference)
+    const documents = user.documents.map((document) => path.join(__dirname,'/public', document.reference))
 
     await BorrarDocumentsAlmacenados(documents)
     const UserToDelete = new UserDto(user);
@@ -103,7 +106,8 @@ export default class UsersRepository {
       await cartsService.remove(user.cart)
       let doc=[]
       for (const document of user.documents) {
-        doc.push(document.reference)
+        path.join(__dirname,'/public', ruta)
+        doc.push(path.join(__dirname,'/public', document.reference))
       }
       await BorrarDocumentsAlmacenados(doc)
     }
@@ -111,3 +115,5 @@ export default class UsersRepository {
     return result
   }
 }
+
+

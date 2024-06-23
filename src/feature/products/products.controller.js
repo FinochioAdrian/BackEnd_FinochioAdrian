@@ -6,6 +6,7 @@ import { sendEmail, transportGmailNodemailer } from "../../utils/sendEmail.js";
 import { usersService as Users } from "../users/repository/users.service.js";
 import { productsService as Products } from "./repository/index.js";
 import envConfig from '../../config/config.js'
+import __dirname from "../../utils.js";
 async function getAll(req, res, next) {
   try {
     const limit = req.query?.limit || 10;
@@ -86,12 +87,26 @@ async function create(req, res, next) {
 
     if (req.files && req.files.length > 0) {
       const filePath = req.files;
+      
+
       const thumbnails = filePath.map((value) => {
-        return value.path.replace(/\\/g, "/");
+
+        
+        const fullPath = value.path.replace(/\\/g, "/");
+
+        const parts = fullPath.split('/public');
+        const result = parts[1];
+
+
+     
+
+        return result
       });
       product.thumbnails = thumbnails;
 
     }
+
+
 
     const payload = await Products.add({ ...product });
 
@@ -182,7 +197,7 @@ async function remove(req, res, next) {
 
     //extraemos el id del creador del producto
     const { owner: ownerFind } = findProduct
-    
+
 
     if (user.role != "admin" && user._id != ownerFind._id) {
       return res.status(403).send({

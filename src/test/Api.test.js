@@ -8,7 +8,8 @@ import { createHash } from "../utils.js";
 import { logger } from "../utils/loggerMiddleware/logger.js";
 import fs from 'fs/promises'
 import UsersDAO from "../feature/users/users.dao.js";
-
+import path from "path";
+import __dirname from "../utils.js";
 const url = "mongodb://localhost:27017/loginClase20"
 
 mongoose.connect(url)
@@ -367,6 +368,7 @@ describe('Testing API', () => {
             
             expect(result.statusCode).to.be.eq(201)
             expect(result._body).to.be.an("object").and.to.have.property('msg')
+            console.log("🚀 ~ it ~ result.statusCode:", result.statusCode)
 
 
 
@@ -700,7 +702,7 @@ async function borrarArchivo(filePath) {
         if (!filePath) {
             return
         }
-        await fs.unlink(filePath);
+        await fs.unlink(path.join(__dirname,'/public', filePath));
     } catch (err) {
 
         logger.error(

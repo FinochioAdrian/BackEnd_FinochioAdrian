@@ -1,8 +1,13 @@
 import multer from "multer";
+import __dirname from "../utils.js";
+import path from 'node:path'
 
 const storageProducts = multer.diskStorage({
-    destination: "src/public/images/products/",
+    destination: path.join(__dirname,'/public', "images/products/"),
     filename: (req, file, cb) => {
+
+        
+        
         const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
         cb(null, uniqueSuffix + ".webp");
     }
@@ -11,7 +16,8 @@ const storageProducts = multer.diskStorage({
 
 
 const storageProfileImg = multer.diskStorage({
-    destination: "src/public/images/profiles/",
+    
+    destination: path.join(__dirname,'/public', '/images/profiles/'),
     filename: (req, file, cb) => {
         const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
         cb(null, uniqueSuffix + ".webp");
@@ -19,7 +25,7 @@ const storageProfileImg = multer.diskStorage({
 });
 
 const storageDocuments = multer.diskStorage({
-    destination: "src/public/documents/",
+    destination: path.join(__dirname,'/public',"/documents/"),
     filename: (req, file, cb) => {
         const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
         const mimeType = file.mimetype.split('/'); // Extraer el tipo MIME (ej: "application/pdf")

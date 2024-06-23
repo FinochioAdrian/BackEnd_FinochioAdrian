@@ -1,6 +1,7 @@
 import {borrarArchivo } from "../../../utils/files.js";
 import ProductDTO from "../product.dto.js";
-
+import __dirname from "../../../utils.js";
+import path from 'node:path'
 export default class ProductRepository {
   constructor(dao) {
     this.dao = dao;
@@ -52,7 +53,8 @@ export default class ProductRepository {
 
     if (product.thumbnails.length > 0) {
       for (const ruta of product.thumbnails) {
-          await borrarArchivo(ruta);
+        
+          await borrarArchivo(path.join(__dirname,'/public', ruta));
       }
   }
     
