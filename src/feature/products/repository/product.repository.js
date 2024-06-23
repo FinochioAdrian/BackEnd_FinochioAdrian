@@ -1,3 +1,4 @@
+import {borrarArchivo } from "../../../utils/files.js";
 import ProductDTO from "../product.dto.js";
 
 export default class ProductRepository {
@@ -43,11 +44,19 @@ export default class ProductRepository {
     return result;
   };
   remove = async (product) => {
+
+   
+
     let productToRemove = new ProductDTO(product)
-    //TODO falta eliminar las imagenes
-    if (product.thumbnails.lentght > 0){
-      //Eliminar imagenes
-    }
+
+
+    if (product.thumbnails.length > 0) {
+      for (const ruta of product.thumbnails) {
+          await borrarArchivo(ruta);
+      }
+  }
+    
+
     let result = await this.dao.remove(productToRemove);
     return result;
   };

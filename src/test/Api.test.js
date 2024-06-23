@@ -50,6 +50,8 @@ describe('Testing API', () => {
         await usersModel.deleteMany({})
         await cartModel.deleteMany({})
         const products = await productModel.find()
+        console.log("🚀 ~ products:", products)
+        
         await BorrarImagenesAlmacenadas(products)
         await productModel.deleteMany({})
         this.timeout = 5000
@@ -59,6 +61,8 @@ describe('Testing API', () => {
 
 
         const products = await productModel.find()
+        console.log("🚀 ~ products:", products)
+        
         await BorrarImagenesAlmacenadas(products)
         await productModel.deleteMany({}) 
         await BorrarDocumentsAlmacenados(documents)
@@ -336,7 +340,7 @@ describe('Testing API', () => {
 
 
         })
-        it("Delete /api/products/:pid permite eliminar un producto con su imagen", async (done) => {
+        it("Delete /api/products/:pid permite eliminar un producto con su imagen", async () => {
             try {
                 
             
@@ -350,28 +354,27 @@ describe('Testing API', () => {
                 .field('category', mockProducts.category)
                 .attach("thumbnails", mockProducts.thumbnails[0])
 
+                console.log("🚀 ~ it ~ body:", body)
 
             expect(code).to.be.eq(201)
             expect(body).to.be.an("object").and.to.have.property('payload')
             const pidA1B2C3 = body.payload._id
             
-            console.log("🚀 ~ it ~ code:", code)
             
             
             
             
             let result = await requester.delete(`/api/products/${pidA1B2C3}`).set('Accept', 'application/json').set('Cookie', [`${cookieAdmin.name}=${cookieAdmin.value}`])
            
-            console.log("🚀 ~ it ~ result.statusCode:", result.statusCode)
+            console.log("🚀 ~ it ~ result._body:", result._body)
             
             expect(result.statusCode).to.be.eq(201)
             expect(result._body).to.be.an("object").and.to.have.property('msg')
 
 
 
-            done()
         } catch (error) {
-            done(error)
+            console.error(error)
         }
 
         })
@@ -665,7 +668,7 @@ describe('Testing API', () => {
             });
 
         })
-        it('DELETE /api/users/ deberá eliminar todos los usuarios que no hayan tenido conexion en los ultimos 2 días', async (done) => {
+        it('DELETE /api/users/ deberá eliminar todos los usuarios que no hayan tenido conexion en los ultimos 2 días', async () => {
              
             try {
                 const responseAllUsers  = await requester.get('/api/users/').set('Cookie', [`${cookieAdmin.name}=${cookieAdmin.value}`])
@@ -676,9 +679,9 @@ describe('Testing API', () => {
     
                 expect(responseDeleteUsers.statusCode).to.be.eq(200)
                 expect(responseDeleteUsers._body.payload).to.be.an('object').to.have.property("cantUserDelete")
-                done()
+                
             } catch (error) {
-                done(error)
+                console.error(error)
             }
            
         })

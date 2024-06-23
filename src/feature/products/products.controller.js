@@ -182,7 +182,7 @@ async function remove(req, res, next) {
 
     //extraemos el id del creador del producto
     const { owner: ownerFind } = findProduct
-
+    
 
     if (user.role != "admin" && user._id != ownerFind._id) {
       return res.status(403).send({
