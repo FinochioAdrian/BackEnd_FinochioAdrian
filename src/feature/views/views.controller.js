@@ -1,7 +1,7 @@
 import jwt from "jsonwebtoken";
 
 import { productsService as Products } from "../products/repository/index.js";
-import {cartsService} from "../carts/repository/index.js";
+import { cartsService } from "../carts/repository/index.js";
 import { logger } from "../../utils/loggerMiddleware/logger.js";
 import envConfig from "../../config/config.js"
 import { usersService as Users } from "../users/repository/users.service.js";
@@ -25,18 +25,14 @@ async function getProducts(req, res) {
     let result = await Products.getAll(limit, page, sort, category, available);
 
     result.prevLink = result.hasPrevPage
-      ? `../products?page=${result.prevPage}&limit=${result.limit}${
-          category ? "&category=" + category : ""
-        }${sort ? "&sort=" + sort : ""}${
-          !available ? "&available=" + available : ""
-        }`
+      ? `../products?page=${result.prevPage}&limit=${result.limit}${category ? "&category=" + category : ""
+      }${sort ? "&sort=" + sort : ""}${!available ? "&available=" + available : ""
+      }`
       : null;
     result.nextLink = result.hasNextPage
-      ? `../products?page=${result.nextPage}&limit=${result.limit}${
-          category ? "&category=" + category : ""
-        }${sort ? "&sort=" + sort : ""}${
-          !available ? "&available=" + available : ""
-        }`
+      ? `../products?page=${result.nextPage}&limit=${result.limit}${category ? "&category=" + category : ""
+      }${sort ? "&sort=" + sort : ""}${!available ? "&available=" + available : ""
+      }`
       : null;
 
     const user = req.user;
@@ -50,16 +46,16 @@ async function getProduct(req, res) {
   try {
     const user = req.user;
     const { pid } = req.params;
-   
+
     if (!pid) {
 
       return res.redirect("/products");
     }
     let product = await Products.getById(pid);
-    
+
 
     if (!product) {
-      
+
       return res.redirect("/products");
     }
 
@@ -73,16 +69,16 @@ async function adminUsers(req, res) {
     const user = req.user;
     const usuarios = await Users.getAllUsers()
 
-    return res.render("adminUsers", { title: "Administrar Usuarios",usuarios:usuarios,user });
+    return res.render("adminUsers", { title: "Administrar Usuarios", usuarios: usuarios, user });
   } catch (error) {
     logger.error("❌ ~ product ~ error:", error);
-    next (error)
+    next(error)
 
   }
 }
 async function adminUsers_modificarRol(req, res, next) {
   try {
-    const {uid} = req.params
+    const { uid } = req.params
 
     const user = await Users.getUserByID(uid)
 
@@ -93,30 +89,30 @@ async function adminUsers_modificarRol(req, res, next) {
     return res.redirect(`/adminUsers`);
   } catch (error) {
     logger.error("❌ ~ product ~ error:", error);
-    next (error)
+    next(error)
   }
 }
 async function adminUsers_delete(req, res, next) {
   try {
-    const {uid} = req.params
+    const { uid } = req.params
 
     const user = await Users.getUserByIdAllData(uid)
 
 
-    
+
     const result = await Users.deleteUser(user)
 
-    
+
 
     return res.redirect(`/adminUsers`);
   } catch (error) {
     logger.error("❌ ~ product ~ error:", error);
-    next (error)
+    next(error)
   }
 }
 
 async function getRealTimeProducts(req, res) {
- return res.render("realTimeProducts", { title: "realTimeProducts" });
+  return res.render("realTimeProducts", { title: "realTimeProducts" });
 }
 async function getCarts(req, res) {
   const { cid } = req.params;
@@ -126,51 +122,62 @@ async function getCarts(req, res) {
   if (!cid) {
     return res.redirect(referer);
   }
-  
+
   const cartFound = await cartsService.getById(cid);
 
   if (!cartFound) {
     return res.redirect(referer);
   }
+  let quantity = 0
+  let amount = 0;
 
-  return res.render("carts", { result: cartFound });
+  const availableProducts = []
+
+  for (let i = cartFound.products.length - 1; i >= 0; i--) {
+    quantity += cartFound.products[i].quantity
+    amount += cartFound.products[i].quantity * cartFound.products[i].product.price
+
+
+  }
+
+  return res.render("carts", { result: cartFound, quantity, amount });
 }
 async function postProductInCart(req, res) {
   try {
-    
-  
-  const { cid, pid } = req.params;
-  const { quantity } = req.body;
-  
 
-  const referer = req.get("referer") || "/products";
 
-  if (!cid || !pid) {
-    return res.redirect(referer);
+    const { cid, pid } = req.params;
+    const { quantity } = req.body;
+
+
+    const referer = req.get("referer") || "/products";
+
+    if (!cid || !pid) {
+      return res.redirect(referer);
+    }
+    const cartFound = await cartsService.getById(cid);
+    const product = await Products.getById(pid);
+
+    if (!cartFound | !product) {
+      return res.redirect(referer);
+    }
+
+    const result = await cartsService.addNewProductInCartById(
+      cartFound._id,
+      product._id,
+      quantity
+    );
+
+    return res.redirect(`/carts/${cid}`);
+  } catch (error) {
+    logger.error("❌ ~ postProductInCart ~ error:", error)
+
   }
-  const cartFound = await cartsService.getById(cid);
-  const product = await Products.getById(pid);
-
-  if (!cartFound | !product) {
-    return res.redirect(referer);
-  }
-
-  const result = await cartsService.addNewProductInCartById(
-    cartFound._id,
-    product._id,
-    quantity
-  );
-
-  return res.redirect(`/carts/${cid}`);
-} catch (error) {
-  logger.error("❌ ~ postProductInCart ~ error:", error)
-    
-}
 }
 
 async function getChat(req, res) {
-  const {email} = req.user
-  
+  const { email } = req.user
+
   return res.render("chat", {
     stylesheet: "/css/chat.css",
     title: "Chat con Socket.IO",
@@ -179,12 +186,12 @@ async function getChat(req, res) {
 }
 
 async function getAddProducts(req, res) {
- return res.render("addProducts", { title: "addProducts" });
+  return res.render("addProducts", { title: "addProducts" });
 }
 
 async function getLogin(req, res) {
   try {
-    
+
     // render login page with message if there is
     const errorMessage = req.flash("error");
     const errorValidation = req.flash("errorValidation");
@@ -230,34 +237,34 @@ async function getRegister(req, res) {
   }
 }
 async function getChatBot(req, res) {
- return res.render("chatBot", {
+  return res.render("chatBot", {
     stylesheet: "/css/chat.css",
     title: "ChatBot con Socket.IO",
   });
 }
 async function getPasswordReset(req, res) {
-  try {  
-  const authHeader =  req.query.token;
+  try {
+    const authHeader = req.query.token;
 
-  if (!authHeader) {
-    if (req.accepts("html")) return res.redirect("/login");
-    return res.status(403).send({ error: "Not authorized",redirect:"/login" });
-  }
-  let token = authHeader;
-  if (authHeader.includes("Bearer")) {
-    token = authHeader.split(" ")[1];
-    
-  }
-
-  jwt.verify(token, envConfig.PRIVATE_KEY_JWT, (err) => {
-    if (err) {
-      if (req.accepts("html")) return res.redirect("/findEmail");
-      return res.status(403).send({ error: "Not authorized",redirect:"/findEmail" });
+    if (!authHeader) {
+      if (req.accepts("html")) return res.redirect("/login");
+      return res.status(403).send({ error: "Not authorized", redirect: "/login" });
     }
-       
-  });
-   
-    
+    let token = authHeader;
+    if (authHeader.includes("Bearer")) {
+      token = authHeader.split(" ")[1];
+
+    }
+
+    jwt.verify(token, envConfig.PRIVATE_KEY_JWT, (err) => {
+      if (err) {
+        if (req.accepts("html")) return res.redirect("/findEmail");
+        return res.status(403).send({ error: "Not authorized", redirect: "/findEmail" });
+      }
+
+    });
+
+
 
     // render login page with message if there is
     const errorMessage = req.flash("error");
@@ -267,7 +274,7 @@ async function getPasswordReset(req, res) {
         ? ["Oops! It looks like you missed a few fields."]
         : req.flash("errorEmptyField");
 
-     return res.render("passwordReset", {
+    return res.render("passwordReset", {
       dangerMsg: errorValidation,
       warningMSG: emptyField,
       stylesheet: "/css/login.css",
@@ -289,12 +296,12 @@ async function findEmail(req, res) {
         ? ["Oops! It looks like you missed a few fields."]
         : req.flash("errorEmptyField");
 
-     return res.render("findEmail", {
+    return res.render("findEmail", {
       dangerMsg: errorValidation,
       warningMSG: emptyField,
       stylesheet: "/css/login.css",
     });
-    
+
   } catch (error) {
     logger.error("❌ ~ router.post ~ error:", error);
     return res.status(error?.status || 500).send("Internal Server error");

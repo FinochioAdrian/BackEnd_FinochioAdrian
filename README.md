@@ -12,7 +12,7 @@
 |19_02          |   Finished   | Add    |In /api/users add router Delete / deberá limpiar a todos los usuarios que no hayan tenido conexión en los utlimos 2 días, Deberá enviar correo indicando al usuario que su cuenta ha sido eliminada por inactividad|
 |19_03          |   Finished   | Add    | View /views/  visualizar , modificar rol, y eliminar|
 |19_04          |   Finished   | Modify | Delete /api/products/:pid para que cuando el producto que se elimina si pertenece a un usuario premiun, le envie un correo indicandole que el producto fue eliminado |
-|19_05          |   unstarted   | Update | finalizar las vistas para el flujo completo de compra|
+|19_05          |   started   | Update | finalizar las vistas para el flujo completo de compra|
 |19_06          |   unstarted   | deploy | realizar el despliegue de tu aplicativo en la plataforma|
 | 14_*          |   pending     | Modify |  modify all console.log|
 | 16_*          |   pending     | Modify |  modify Documentacion para que fucione con la seguridad e incluya los endpoint add y modify|
@@ -21,15 +21,13 @@
 
 1. Clonar el folder del repositorio en tu máquina local:
         - git init
-        - git remote add origin <https://github.com/FinochioAdrian/Desafios_BackEnd_FinochioAdrian_CoderHouse.git>
-        - git config core.sparseCheckout true
-        - git sparse-checkout set Desafio19_Clase46
+        - git remote add origin <https://github.com/FinochioAdrian/DesafioFinal_BackEnd_FinochioAdrian_CoderHouse.git>
         - git pull origin main
 
 2. Instalar dependencias "npm i"
 
 3. Ejecutar con:
-        - inicio Guiado => "npm start";
-        - ambiente production => npm run prod
+        - ambiente production => "npm start"
+        - inicio Guiado => "npm run prod";
         - ambiente developer => npm run dev
         - ambiente test => npm run test

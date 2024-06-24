@@ -5,8 +5,8 @@
   "main": "./index.js",
   "type": "module",
   "scripts": {
-    "start": "node ./process.js ",
-    "prod": "set NODE_ENV=production&& node ./index.js ",
+    "start": "set NODE_ENV=production&& node ./index.js ",
+    "prod": "node ./process.js ",
     "dev": "set NODE_ENV=development&& npx nodemon ./index.js",
     "load": "npx nodemon ./src/pruebas.js ",
     "test": "mocha src/test/Api.test.js"

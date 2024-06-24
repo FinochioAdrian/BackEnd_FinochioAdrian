@@ -222,44 +222,62 @@ async function purchase(req, res) {
     }
 
     let amount = 0;
-    const products = cart.products.map((producto, index, array) => {
-      if (producto.quantity <= producto.product.stock) {
-        amount += producto.quantity * producto.product.price;
-        producto.product.stock -= producto.quantity;
-        const productsPurchase = array.splice(index, 1);
 
-        return productsPurchase;
+    const availableProducts = []
+
+    for (let i = cart.products.length - 1; i >= 0; i--) {
+      if (cart.products[i].quantity <= cart.products[i].product.stock) {
+        //aumento el monto
+        amount += cart.products[i].quantity * cart.products[i].product.price
+        // resto el stock para luego actualizarlo
+        cart.products[i].product.stock -= cart.products[i].quantity
+        //inserto una copia en producto validos
+        availableProducts.push(cart.products[i]);
+        // Elimino el producto del cart
+        cart.products.splice(i, 1);
       }
-    });
+    }
 
-    let productsPurchase = products[0] || []
-
-    if (productsPurchase.length > 0) {
-
-      for (const product of productsPurchase) {
+    if (availableProducts.length > 0) {
+      //Actulizo los producto en la dbs
+      for (const product of availableProducts) {
         try {
+
           await productsService.update(product.product._id, product.product);
+
         } catch (error) {
           logger.error("❌ ~ purchase ~ error:", error)
           throw error
         }
 
-
       }
-      const cartsUpdate = await cartsService.update(cart._id, cart);
+
+      await cartsService.update(cart._id, cart);
       const newcart = await cartsService.getById(cid);
 
       const ticket = await ticketsService.create({ amount, purchaser: email });
 
+
+
+      if (req.accepts("html")) {
+        const ticketObject =ticket.toObject()
+        return res.render("ticket", { title: "Ticket",ticket:ticketObject, productsPurchase:availableProducts});
+      }
       return res.send({
         status: "success",
-        payload: { ticket, productsPurchase, productsNotPurchase: newcart.products },
+        payload: { ticket, availableProducts, productsNotPurchase: newcart.products },
       });
+    }
+    if (req.accepts("html")) {
+      return res.redirect(req.get("referer"));
     }
     return res.send({
       status: "success",
       payload: { productsNotPurchase: cart.products },
     });
+
+    
+
   } catch (error) {
     logger.error("❌ ~ purchase ~ error:", error);
 
