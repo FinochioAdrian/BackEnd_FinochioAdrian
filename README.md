@@ -12,8 +12,8 @@
 |19_02          |   Finished   | Add    |In /api/users add router Delete / deberá limpiar a todos los usuarios que no hayan tenido conexión en los utlimos 2 días, Deberá enviar correo indicando al usuario que su cuenta ha sido eliminada por inactividad|
 |19_03          |   Finished   | Add    | View /views/  visualizar , modificar rol, y eliminar|
 |19_04          |   Finished   | Modify | Delete /api/products/:pid para que cuando el producto que se elimina si pertenece a un usuario premiun, le envie un correo indicandole que el producto fue eliminado |
-|19_05          |   started   | Update | finalizar las vistas para el flujo completo de compra|
-|19_06          |   unstarted   | deploy | realizar el despliegue de tu aplicativo en la plataforma|
+|19_05          |   Finished   | Update | finalizar las vistas para el flujo completo de compra|
+|19_06          |   started   | deploy | realizar el despliegue de tu aplicativo en la plataforma|
 | 14_*          |   pending     | Modify |  modify all console.log|
 | 16_*          |   pending     | Modify |  modify Documentacion para que fucione con la seguridad e incluya los endpoint add y modify|
 
@@ -31,3 +31,5 @@
         - inicio Guiado => "npm run prod";
         - ambiente developer => npm run dev
         - ambiente test => npm run test
+
+ Visite el desarrollo  en <https://backendfinochioadrian-production.up.railway.app/>
