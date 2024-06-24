@@ -1,4 +1,4 @@
-import {faker} from '@faker-js/Faker'
+import { faker } from '@faker-js/faker';
 faker.location= "es"
     export const generateListProducts = async ()  => {
         let numOfProducts = 100
