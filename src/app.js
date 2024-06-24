@@ -30,8 +30,8 @@ const app = express();
 
 //environment var
 
-const PRIVATE_KEY_COOKIE = envConfig.PRIVATE_KEY_COOKIE;
-const PORT = envConfig.PORT ||process.env.PORT || 8080;
+const PRIVATE_KEY_COOKIE = process.env.PRIVATE_KEY_COOKIE;
+const PORT = process.env.PORT || 8080;
 
 
 //Iniciamos el Server

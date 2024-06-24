@@ -71,7 +71,7 @@ async function passwordReset(req, res, next) {
     }
     let emailToken;
     try {
-      let credentiales = jwt.verify(token, envConfig.PRIVATE_KEY_JWT)
+      let credentiales = jwt.verify(token, process.env.PRIVATE_KEY_JWT)
       const { user: userToken } = credentiales
       emailToken = userToken.email
     } catch (error) {
@@ -162,7 +162,7 @@ async function forgotEmailAndPassword(req, res, next) {
 
     delete user.password;
     const token = generateToken({ _id: user._id, email: user.email }, "1h")
-    const verificationLink = `${envConfig.HOST}:${envConfig.PORT}/password-reset?token=${token}`
+    const verificationLink = `${process.env.HOST}:${process.env.PORT}/password-reset?token=${token}`
     sendEmail(transportGmailNodemailer, {
       from: "recoveryPasswordTiendaCoder",
       to: user.email,

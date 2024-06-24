@@ -29,7 +29,7 @@ export const logger = winston.createLogger({
     levels: customLevelsOptions.levels,
     transports: [
         new winston.transports.Console({
-            level: envConfig.ENTORNO == "production"?'info':'debug',
+            level: process.env.ENTORNO == "production"?'info':'debug',
             format: winston.format.combine(winston.format.colorize({ colors: customLevelsOptions.colors }),
                 winston.format.simple(),winston.format.errors({stack:true})),
                 

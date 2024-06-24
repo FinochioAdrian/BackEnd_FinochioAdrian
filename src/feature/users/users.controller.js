@@ -58,14 +58,14 @@ async function deleteUsersForInactivity(req, res, next) {
             let message = `
         <div> 
             <h2>Estimado usuario: <b>${user.last_name} ${user.first_name}</b></h2>
-            <p>Su cuenta en nuestra tienda virtual <b> ${envConfig.TIENDA}</b>, ha sido <b> ELIMINADA </b> por inactividad</p>
+            <p>Su cuenta en nuestra tienda virtual <b> ${process.env.TIENDA}</b>, ha sido <b> ELIMINADA </b> por inactividad</p>
          </div>
         `
 
             const email = {
-                from: envConfig.USERMAIL,
+                from: process.env.USERMAIL,
                 to: user.email,
-                subject: `Eliminación de Cuenta de ${envConfig.TIENDA}`,
+                subject: `Eliminación de Cuenta de ${process.env.TIENDA}`,
                 html: message
             }
 

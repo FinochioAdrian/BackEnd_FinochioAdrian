@@ -256,7 +256,7 @@ async function getPasswordReset(req, res) {
 
     }
 
-    jwt.verify(token, envConfig.PRIVATE_KEY_JWT, (err) => {
+    jwt.verify(token, process.env.PRIVATE_KEY_JWT, (err) => {
       if (err) {
         if (req.accepts("html")) return res.redirect("/findEmail");
         return res.status(403).send({ error: "Not authorized", redirect: "/findEmail" });
