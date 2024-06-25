@@ -11,7 +11,7 @@ import envConfig from './config/config.js'
 import {transportGmailNodemailer as transportGmail } from './utils/sendEmail.js'
 
 /* Una private key sirve para utilizarse al momento de hacer el cifrado del token */
-const PRIVATE_KEY_JWT =process.env.PRIVATE_KEY_JWT ;
+const PRIVATE_KEY_JWT =envConfig.PRIVATE_KEY_JWT ;
 
 
 const auth = authorization

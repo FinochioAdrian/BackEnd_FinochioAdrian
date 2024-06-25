@@ -14,10 +14,10 @@ const JWTStrategy = jwt.Strategy;
 const ExtractJWT = jwt.ExtractJwt;
 
 
-const PRIVATE_KEY_JWT = process.env.PRIVATE_KEY_JWT;
-const CLIENT_ID_GITHUB = process.env.CLIENT_ID_GITHUB;
-const CLIENT_SECRET_GITHUB = process.env.CLIENT_SECRET_GITHUB;
-const CALLBACK_URL_GITHUB = process.env.CALLBACK_URL_GITHUB;
+const PRIVATE_KEY_JWT = envConfig.PRIVATE_KEY_JWT;
+const CLIENT_ID_GITHUB = envConfig.CLIENT_ID_GITHUB;
+const CLIENT_SECRET_GITHUB = envConfig.CLIENT_SECRET_GITHUB;
+const CALLBACK_URL_GITHUB = envConfig.CALLBACK_URL_GITHUB;
 
 const initializePassport = () => {
   // Passport Local register

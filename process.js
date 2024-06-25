@@ -37,7 +37,7 @@ async function start() {
   const childProcess = spawn("node", ['./index.js'], {
     stdio: 'inherit', // Utiliza los mismos flujos de entrada/salida que el proceso principal
     env: {
-      ...process.env, // Copia las variables de entorno del proceso principal
+      ...envConfig, // Copia las variables de entorno del proceso principal
       PORT: port, // Pasa el puerto como variable de entorno al proceso secundario
       NODE_ENV: mode, // Pasa el modo como variable de entorno al proceso secundario
     },

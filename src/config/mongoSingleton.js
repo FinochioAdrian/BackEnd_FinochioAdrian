@@ -22,10 +22,10 @@ function connectDB(url) {
 
 export default class MongoSingleton {
   static #instance;
-  static URL = process.env.MONGO_URL;
+  static URL = envConfig.MONGO_URL;
 
   constructor() {
-    connectDB(process.env.MONGO_URL);
+    connectDB(envConfig.MONGO_URL);
   }
 
   static getInstance() {

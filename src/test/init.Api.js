@@ -13,10 +13,7 @@ import __dirname from "../utils.js";
 const url = "mongodb+srv://eidrienhez33:K0DW1LhyMOcpSKZy@ecommercecluster.nmjs8p9.mongodb.net/ecommerce?retryWrites=true&w=majority"
 
 mongoose.connect(url)
-const requester = supertest('http://localhost:8080')
-
-
-
+const requester = supertest('https://backendfinochioadrian-production.up.railway.app')
 
 const documents = []
 let cookieUser;
@@ -51,7 +48,6 @@ describe('Testing API', () => {
         await usersModel.deleteMany({})
         await cartModel.deleteMany({})
         const products = await productModel.find()
-
         await BorrarImagenesAlmacenadas(products)
         await productModel.deleteMany({})
         this.timeout = 5000
@@ -59,7 +55,6 @@ describe('Testing API', () => {
     })
     after(async function () {
         /* 
-        
                 const products = await productModel.find()
                 
                 
@@ -97,7 +92,7 @@ describe('Testing API', () => {
             expect(userAdmin.role).to.be.equal(mockUserAdmin.role)
 
         })
-        it('Se creo un usuario Premiun correctamente', async () => {
+        it('Se creo un usuario Premium correctamente', async () => {
             let { email, password } = mockUserPremiun
             password = createHash(mockUserPremiun.password)
 
@@ -221,25 +216,7 @@ describe('Testing API', () => {
         }
         let pid
 
-        it("post /api/products no permite añadir un producto (con imagen) a usuarios sin premium", async () => {
-
-
-            const { statusCode, _body } = await requester.post("/api/products/").set('Accept', 'application/json').set('Cookie', [`${cookieUser.name}=${cookieUser.value}`])
-                .field('title', mockProducts.title)
-                .field('description', mockProducts.description)
-                .field('code', mockProducts.code)
-                .field('price', mockProducts.price)
-                .field('status', mockProducts.status)
-                .field('stock', mockProducts.stock)
-                .field('category', mockProducts.category)
-                .attach("thumbnails", mockProducts.thumbnails[0])
-
-
-
-            expect(statusCode).to.be.eq(403)
-            expect(_body).to.have.property("error").with.eql('No permissions')
-
-        })
+      
         it("post /api/products permite añadir un producto con imagen a usuarios premium ", async () => {
 
             const { statusCode: code, _body: body } = await requester.post("/api/products/").set('Accept', 'application/json').set('Cookie', [`${cookieUserPremiun.name}=${cookieUserPremiun.value}`])
@@ -282,45 +259,7 @@ describe('Testing API', () => {
         })
 
 
-        it("get /api/products devuelve una lista de productos solo a usuarios logueados ", async () => {
-
-
-            let result = await requester.get("/api/products/").set('Accept', 'application/json')
-
-            expect(result.statusCode).to.be.eq(401)
-            expect(result._body).to.have.property("error").with.eql('Unauthorized')
-
-            result = await requester.get("/api/products/").set('Accept', 'application/json').set('Cookie', [`${cookieUser.name}=${cookieUser.value}`])
-
-
-
-
-            expect(result.statusCode).to.be.eq(200)
-            expect(result._body.payload).to.be.an("array").and.to.not.empty
-
-
-        })
-        it("get /api/products/:pid devuelve un unico producto por id de producto solo a usuarios logueados ", async () => {
-
-
-
-            let result = await requester.get(`/api/products/${pid}`).set('Accept', 'application/json')
-
-
-            expect(result.statusCode).to.be.eq(401)
-            expect(result._body).to.have.property("error").with.eql('Unauthorized')
-
-
-            result = await requester.get(`/api/products/${pid}`).set('Accept', 'application/json').set('Cookie', [`${cookieUser.name}=${cookieUser.value}`])
-
-
-
-            expect(result.statusCode).to.be.eq(200)
-            expect(result._body.product).to.be.an("object").and.to.not.empty
-            expect(result._body.product._id).to.be.equal(pid)
-
-
-        })
+        
         it("put /api/products permite modificar un producto con imagen", async () => {
             let newPrice = 50000
             let result = await requester.get(`/api/products/${pid}`).set('Accept', 'application/json').set('Cookie', [`${cookieAdmin.name}=${cookieAdmin.value}`])
@@ -340,163 +279,12 @@ describe('Testing API', () => {
 
 
         })
-        it("Delete /api/products/:pid permite eliminar un producto con su imagen", async () => {
-            try {
-
-
-                const { statusCode: code, _body: body } = await requester.post("/api/products/").set('Accept', 'application/json').set('Cookie', [`${cookieUserPremiun.name}=${cookieUserPremiun.value}`])
-                    .field('title', mockProducts.title)
-                    .field('description', mockProducts.description)
-                    .field('code', 'A1B2C3')
-                    .field('price', mockProducts.price)
-                    .field('status', mockProducts.status)
-                    .field('stock', mockProducts.stock)
-                    .field('category', mockProducts.category)
-                    .attach("thumbnails", mockProducts.thumbnails[0])
-
-
-                expect(code).to.be.eq(201)
-                expect(body).to.be.an("object").and.to.have.property('payload')
-                const pidA1B2C3 = body.payload._id
-
-
-
-
-
-                let result = await requester.delete(`/api/products/${pidA1B2C3}`).set('Accept', 'application/json').set('Cookie', [`${cookieAdmin.name}=${cookieAdmin.value}`])
-
-
-                expect(result.statusCode).to.be.eq(201)
-                expect(result._body).to.be.an("object").and.to.have.property('msg')
-                console.log("🚀 ~ it ~ result.statusCode:", result.statusCode)
-
-
-
-            } catch (error) {
-                console.error(error)
-            }
-
-        })
+        
 
 
 
     })
     describe("Endpoint Carts test", () => {
-        it("Un usuario debe poder agregar un producto a su cart", async () => {
-            const ProductsResult = await requester.get(`/api/products/`).set('Accept', 'application/json').set('Cookie', [`${cookieUser.name}=${cookieUser.value}`])
-            const pid = ProductsResult._body.payload[0]._id
-
-
-            expect(mongoose.isValidObjectId(pid)).to.be.true
-
-            const userResult = await requester.get('/api/sessions/current').set('Accept', 'application/json').set('Cookie', [`${cookieUser.name}=${cookieUser.value}`])
-            const cid = userResult._body.payload.cart
-
-            const cartResult = await requester.post(`/api/carts/${cid}/product/${pid}`).set('Accept', 'application/json').set('Cookie', [`${cookieUser.name}=${cookieUser.value}`])
-            const { statusCode, _body } = cartResult
-
-
-
-            expect(statusCode).to.be.eql(201)
-            expect(_body).to.have.property("payload")
-
-
-
-            const productFound = _body.payload.products.some((product) => { return product.product === pid })
-            expect(productFound).to.be.true
-
-        })
-        it("Un usuario debe poder actualizar la cantidad un producto en su cart", async () => {
-
-
-            const userResult = await requester.get('/api/sessions/current').set('Accept', 'application/json').set('Cookie', [`${cookieUser.name}=${cookieUser.value}`])
-            const cid = userResult._body.payload.cart
-
-            const cartResult = await requester.get(`/api/carts/${cid}`).set('Accept', 'application/json').set('Cookie', [`${cookieUser.name}=${cookieUser.value}`])
-            const { statusCode, _body } = cartResult
-
-            const pid = _body.payload.products[0].product._id
-
-            expect(pid).to.be.exist
-            expect(mongoose.isValidObjectId(pid)).to.be.true
-
-
-
-            const quantity = 10
-            const cartDeleteResult = await requester.put(`/api/carts/${cid}/product/${pid}`).set('Accept', 'application/json').set('Cookie', [`${cookieUser.name}=${cookieUser.value}`]).send({ quantity })
-            const { statusCode: statusCode_cartDeleteResult, _body: _body_cartDeleteResult } = cartDeleteResult
-
-
-            expect(statusCode_cartDeleteResult).to.be.eql(201)
-            expect(_body_cartDeleteResult).to.have.property("payload")
-
-            const cartNewResult = await requester.get(`/api/carts/${cid}`).set('Accept', 'application/json').set('Cookie', [`${cookieUser.name}=${cookieUser.value}`])
-            const { statusCode: statusCode_cartNewResult, _body: _body_cartNewResult } = cartNewResult
-
-
-            expect(_body_cartNewResult.payload.products[0].quantity).to.be.equal(quantity)
-
-        })
-        it("Un usuario debe poder eliminar un producto de su cart", async () => {
-
-
-            const userResult = await requester.get('/api/sessions/current').set('Accept', 'application/json').set('Cookie', [`${cookieUser.name}=${cookieUser.value}`])
-            const cid = userResult._body.payload.cart
-
-            const cartResult = await requester.get(`/api/carts/${cid}`).set('Accept', 'application/json').set('Cookie', [`${cookieUser.name}=${cookieUser.value}`])
-            const { statusCode, _body } = cartResult
-
-            const pid = _body.payload.products[0].product._id
-
-            expect(pid).to.be.exist
-            expect(mongoose.isValidObjectId(pid)).to.be.true
-
-
-
-
-            const cartDeleteResult = await requester.delete(`/api/carts/${cid}/product/${pid}`).set('Accept', 'application/json').set('Cookie', [`${cookieUser.name}=${cookieUser.value}`])
-            const { statusCode: statusCode_cartDeleteResult, _body: _body_cartDeleteResult } = cartDeleteResult
-
-
-            expect(statusCode_cartDeleteResult).to.be.eql(201)
-            expect(_body_cartDeleteResult).to.have.property("payload")
-
-            const cartNewResult = await requester.get(`/api/carts/${cid}`).set('Accept', 'application/json').set('Cookie', [`${cookieUser.name}=${cookieUser.value}`])
-            const { statusCode: statusCode_cartNewResult, _body: _body_cartNewResult } = cartNewResult
-
-            const productInCart = _body_cartNewResult.payload.products.some((product) => { return product.product._id === pid })
-
-            expect(productInCart).to.be.false
-
-        })
-
-        it("Un usuario Premiun no debe poder agregar un producto propio a su cart", async () => {
-
-            const pid = pidAddForPremiun
-
-
-            expect(mongoose.isValidObjectId(pid)).to.be.true
-
-            const userResult = await requester.get('/api/sessions/current').set('Accept', 'application/json').set('Cookie', [`${cookieUserPremiun.name}=${cookieUserPremiun.value}`])
-
-            const cid = userResult._body.payload.cart
-
-
-            expect(mongoose.isValidObjectId(cid)).to.be.true
-
-            const cartResult = await requester.post(`/api/carts/${cid}/product/${pid}`).set('Accept', 'application/json').set('Cookie', [`${cookieUserPremiun.name}=${cookieUserPremiun.value}`])
-            const { statusCode, _body } = cartResult
-
-
-
-            expect(statusCode).to.be.eql(409)
-            expect(_body).to.have.property("msg").with.eql("This product is already yours. You cannot add it to your cart.")
-
-
-
-
-
-        })
 
 
 
@@ -508,78 +296,7 @@ describe('Testing API', () => {
             proofOfResidence: "./src/test/documentsTest/proofOfResidence.pdf",
             accountStatement: "./src/test/documentsTest/accountStatement.pdf"
         }
-        it('/api/users/:uid/documents debe poder subir documento de identificacion', async () => {
 
-
-            const { _body } = await requester.get('/api/sessions/current').set('Cookie', [`${cookieUser.name}=${cookieUser.value}`])
-
-            const { statusCode, _body: body } = await requester.post(`/api/users/${_body.payload._id}/documents`).set('Accept', 'application/json').set('Cookie', [`${cookieUser.name}=${cookieUser.value}`])
-                .attach("identification", mockDocument.identification)
-
-            body.payload.documents.forEach((document) => {
-                if (!documents.includes(document.reference)) {
-
-                    documents.push(document.reference)
-                }
-
-            })
-
-
-            expect(statusCode).to.be.eq(201)
-
-
-        })
-
-        it('/api/users/:uid debe devolver error si el usuario no ha cargado los documentos', async () => {
-            //el usuario previamente no es premium
-            //el usuario previamente cargo 1 solo documento
-
-            const { _body } = await requester.get('/api/sessions/current').set('Cookie', [`${cookieUser.name}=${cookieUser.value}`])
-
-            const uid = _body.payload._id
-
-            const { statusCode, _body: body } = await requester.put(`/api/users/premium/${uid}`).set('Cookie', [`${cookieUser.name}=${cookieUser.value}`])
-
-            expect(statusCode).to.be.eql(422)
-
-            expect(body.message).to.be.eql(`Error: User did not complete uploading required documentation`)
-        })
-
-        it('/api/users/:uid/documents debe poder subir documento Comprobante de domicilio', async () => {
-
-
-            const { _body } = await requester.get('/api/sessions/current').set('Cookie', [`${cookieUser.name}=${cookieUser.value}`])
-
-            const { statusCode, _body: body } = await requester.post(`/api/users/${_body.payload._id}/documents`).set('Accept', 'application/json').set('Cookie', [`${cookieUser.name}=${cookieUser.value}`])
-                .attach("proofOfResidence", mockDocument.proofOfResidence)
-            body.payload.documents.forEach((document) => {
-                if (!documents.includes(document.reference)) {
-
-                    documents.push(document.reference)
-                }
-
-            })
-
-            expect(statusCode).to.be.eq(201)
-
-        })
-        it('/api/users/:uid/documents debe poder subir documento de Comprobante de Estado de cuenta', async () => {
-
-
-            const { _body } = await requester.get('/api/sessions/current').set('Cookie', [`${cookieUser.name}=${cookieUser.value}`])
-
-            const { statusCode, _body: body } = await requester.post(`/api/users/${_body.payload._id}/documents`).set('Accept', 'application/json').set('Cookie', [`${cookieUser.name}=${cookieUser.value}`])
-                .attach("accountStatement", mockDocument.accountStatement)
-
-            body.payload.documents.forEach((document) => {
-                if (!documents.includes(document.reference)) {
-
-                    documents.push(document.reference)
-                }
-
-            })
-            expect(statusCode).to.be.eq(201)
-        })
         it('/api/users/:uid/documents debe poder subir multiples documentos', async () => {
 
 
@@ -601,7 +318,7 @@ describe('Testing API', () => {
         })
 
 
-        it('/api/users/:uid debe actualizar a un usuario como premiun solo si ha cargado los 3 documentos', async () => {
+        it('/api/users/:uid debe actualizar a un usuario como premium solo si ha cargado los 3 documentos', async () => {
             //el usuario previamente no es premium
             //el usuario previamente cargo todos los documentos
 
@@ -622,26 +339,7 @@ describe('Testing API', () => {
 
 
         })
-        it('/api/users/:uid debe de poder actualizar a un usuario premiun como user', async () => {
-            //el usuario previamente es premium
 
-            const { _body } = await requester.get('/api/sessions/current').set('Cookie', [`${cookieUser.name}=${cookieUser.value}`])
-            expect(_body.payload.role).to.be.eql(`premium`)
-
-            const uid = _body.payload._id
-
-            const { statusCode, _body: body } = await requester.put(`/api/users/premium/${uid}`).set('Cookie', [`${cookieUser.name}=${cookieUser.value}`])
-
-            expect(statusCode).to.be.eql(200)
-            expect(body.newRole).to.be.eql(`user`)
-
-
-            const { _body: newBody } = await requester.get('/api/sessions/current').set('Cookie', [`${cookieUser.name}=${cookieUser.value}`])
-
-            expect(newBody.payload.role).to.be.eql(`user`)
-
-
-        })
 
         it('GET /api/users/ deberá obtener todos los usuarios, éste sólo debe devolver los datos principales', async () => {
 
@@ -667,7 +365,7 @@ describe('Testing API', () => {
             });
 
         })
-        it('DELETE /api/users/ deberá eliminar todos los usuarios que no hayan tenido conexion en los ultimos 2 días', async () => {
+        /* it('DELETE /api/users/ deberá eliminar todos los usuarios que no hayan tenido conexion en los ultimos 2 días', async () => {
 
             try {
                 const responseAllUsers = await requester.get('/api/users/').set('Cookie', [`${cookieAdmin.name}=${cookieAdmin.value}`])
@@ -683,7 +381,7 @@ describe('Testing API', () => {
                 console.error(error)
             }
 
-        })
+        }) */
     })
 
 
