@@ -9,7 +9,8 @@
     "prod": "node ./process.js ",
     "dev": "set NODE_ENV=development&& npx nodemon ./index.js",
     "load": "npx nodemon ./src/pruebas.js ",
-    "test": "mocha src/test/Api.test.js"
+    "test": "mocha src/test/Api.test.js",
+    "init:Api": "mocha src/test/init.Api.js"
   },
   "nodemonConfig": {
     "ignore": [

@@ -35,10 +35,12 @@
           <a class="nav-link" href="/adminUsers">Administrar Usuarios</a>
         </li>
         {{/if}}
+        {{#if (neq user.role "admin")}}
         {{#if user.cart}}
         <li class="nav-item">
           <a class="nav-link" href="/carts/{{user.cart}}">Cart</a>
         </li>
+        {{/if}}
         {{/if}}
       </ul>
       <form class="d-flex me-5" role="search">

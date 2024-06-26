@@ -60,8 +60,11 @@ async function create(req, res) {
 
 async function addProductInCart(req, res) {
   try {
+    
     const { user } = req
     const { cid, pid } = req.params;
+    const { quantity } = req.body;
+    
     // Buscar el cart
     const cart = await Carts.getById(cid);
     if (!cart) {
@@ -75,13 +78,15 @@ async function addProductInCart(req, res) {
     if (!product) {
       return res.status(404).send({ status: "fail", msg: "Product no found" });
     }
+    
 
     // validar que usuario premiun no pueda añadir a su cart un producto propio
     if (user._id == product.owner._id) {
       return res.status(409).send({ status: "Conflict", msg: "This product is already yours. You cannot add it to your cart." });
     }
+    
+    const result = await Carts.addNewProductInCartById(cart._id, product._id,quantity??1);
 
-    const result = await Carts.addNewProductInCartById(cart._id, product._id);
     if (!result) {
       return res
         .status(400)

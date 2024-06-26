@@ -143,18 +143,18 @@ async function getCarts(req, res) {
   return res.render("carts", { result: cartFound, quantity, amount });
 }
 async function postProductInCart(req, res) {
-  try {
-
-
+  try {    
+    const { user } = req
     const { cid, pid } = req.params;
     const { quantity } = req.body;
-
+    console.log("🚀 ~ postProductInCart ~ req:", user)
 
     const referer = req.get("referer") || "/products";
 
     if (!cid || !pid) {
       return res.redirect(referer);
     }
+    // Buscar el cart y Buscar el producto
     const cartFound = await cartsService.getById(cid);
     const product = await Products.getById(pid);
 
@@ -162,11 +162,23 @@ async function postProductInCart(req, res) {
       return res.redirect(referer);
     }
 
-    const result = await cartsService.addNewProductInCartById(
-      cartFound._id,
-      product._id,
-      quantity
-    );
+     // validar que usuario premiun no pueda añadir a su cart un producto propio
+
+     if (user._id == product.owner._id) {
+      i
+        return res.redirect(referer);
+     
+     
+    }
+
+
+
+    const result = await cartsService.addNewProductInCartById(cartFound._id, product._id,quantity??1);
+
+    if (!result) {
+      return res.redirect(referer);
+    }
+
 
     return res.redirect(`/carts/${cid}`);
   } catch (error) {
@@ -256,7 +268,7 @@ async function getPasswordReset(req, res) {
 
     }
 
-    jwt.verify(token, process.env.PRIVATE_KEY_JWT, (err) => {
+    jwt.verify(token, envConfig.PRIVATE_KEY_JWT, (err) => {
       if (err) {
         if (req.accepts("html")) return res.redirect("/findEmail");
         return res.status(403).send({ error: "Not authorized", redirect: "/findEmail" });

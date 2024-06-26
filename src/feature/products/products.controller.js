@@ -236,7 +236,7 @@ async function remove(req, res, next) {
       let message = `
         <div> 
             <h2>Estimado usuario: <b>${user.last_name} ${user.first_name}</b></h2>
-            <p>Un producto que usted ha añadido en nuestra tienda virtual <b> ${process.env.TIENDA}</b>, ha sido <b> ELIMINADO </b> </p>
+            <p>Un producto que usted ha añadido en nuestra tienda virtual <b> ${envConfig.TIENDA}</b>, ha sido <b> ELIMINADO </b> </p>
                   <table class="max-width:600px; margin: 0 auto;">
                     <thead>
                       <tr>
@@ -266,9 +266,9 @@ async function remove(req, res, next) {
         `
 
       const mail = {
-        from: process.env.USERMAIL,
+        from: envConfig.USERMAIL,
         to: userFind.email,
-        subject: `Eliminación de Producto de ${process.env.TIENDA}`,
+        subject: `Eliminación de Producto de ${envConfig.TIENDA}`,
         html: message
       }
 
