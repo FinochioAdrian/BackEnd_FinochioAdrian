@@ -85,7 +85,9 @@ router.get(
 router.post(
   "/carts/:cid/product/:pid",
   passportCall("jwt"),
-  auth(["user"]),
+  auth(["user", "premium"]),
+  (req,res,next)=>{ console.log("holas aqui denuevo") 
+    next()},
   viewValidatorMiddleware("isCID"),
   runValidation,
   viewValidatorMiddleware("isPID"),

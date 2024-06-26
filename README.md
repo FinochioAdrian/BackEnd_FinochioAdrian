@@ -32,4 +32,15 @@
         - ambiente developer => npm run dev
         - ambiente test => npm run test
 
- Visite el desarrollo  en <https://backendfinochioadrian-production.up.railway.app/>
+ ## Visite el desarrollo  en <https://backendfinochioadrian-production.up.railway.app/>
+ ## Credenciales 
+|Rol |  Usuario       | clave |   
+|---------------|---------------|--------|
+|Admin| adminTiendita@gmail.com|123456789|
+|usuario| usuarioAnonimo@gmail.com|123456789|
+
+
+        
+## Documentacion de API 
+### <https://backendfinochioadrian-production.up.railway.app/apidocs/>
+

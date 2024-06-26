@@ -6,6 +6,8 @@ import cartValidationMiddleware, {
 } from "./cartValidationMiddleware.js";
 import { auth, passportCall } from "../../utils.js";
 
+import { logger } from "../../utils/loggerMiddleware/logger.js";
+
 const router = express.Router();
 /* Docs finalizada */
 router.get(
@@ -38,7 +40,6 @@ router.post(
 // Add new product in cart by cart id and product id
 router.post(
   "/:cid/product/:pid",
-  
   passportCall("jwt"),
 auth(["user","premium","admin"]),
   cartValidationMiddleware("isCid"),
