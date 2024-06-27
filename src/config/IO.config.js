@@ -9,6 +9,7 @@ import path from "path";
 import { writeFile, mkdir } from "fs/promises";
 import sharp from "sharp";
 import { logger } from "../utils/loggerMiddleware/logger.js";
+import { usersService } from "../feature/users/repository/users.service.js";
 const productAddSchema = Joi.object({
   id: Joi.alternatives().try(Joi.number(), Joi.string()),
   title: Joi.string().required(),
@@ -19,6 +20,8 @@ const productAddSchema = Joi.object({
   stock: Joi.number().integer().strict(true).required(),
   category: Joi.string().required(),
   thumbnails: Joi.array().items(Joi.binary()),
+  owner: Joi.string().required(),
+
 });
 
 let contadorChat = 1;
@@ -41,6 +44,7 @@ const IOinit = (httpServer) => {
 
     socket.on("addNewProduct", async (data) => {
       try {
+        
         // Validar el cuerpo de la solicitud contra el esquema
         const validationResult = productAddSchema.validate(data, {
           abortEarly: false,
@@ -66,12 +70,23 @@ const IOinit = (httpServer) => {
 
           data.thumbnails = savedImages;
         } catch (error) {
-          console.error("Error al subir imágenes:", error);
+          logger.error("Error al subir imágenes:", error);
           // Manejar el error según sea necesario
           throw error;
         }
-
-        await productsService.add({ ...data });
+        const owner = {
+          _id: data.owner,
+          admin: false
+        }
+        const user = await usersService.getUserByID(data.owner)
+        
+        if (user.role == "admin") {
+          owner.admin = true
+        }
+        const nuevoProducto = { ...data,owner }
+        
+        
+        await productsService.add(nuevoProducto);
         const products = await productsService.getAll();
         //enviar los productos al cliente
         socket.emit("products", products);
@@ -192,7 +207,7 @@ async function SaveImages(data) {
     );
     fileNames.forEach((fileName) => {});
     // Devolver nombres de archivo al cliente
-    return fileNames;
+    return "images/products/"+fileNames;
   } catch (error) {
     logger.error("❌ ~ SaveImages ~ error:",
       "Error al procesar imágenes:",

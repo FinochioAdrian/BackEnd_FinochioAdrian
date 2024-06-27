@@ -28,7 +28,7 @@ const renderProducts = (products) => {
       <div class="card" style="width: 18rem;">
         ${
           thumbnails.length > 0
-            ? '<img src="/images/products/' +
+            ? '<img src="' +
               thumbnails[0] +
               '" class="bd-placeholder-img card-img-top img-fluid ratio-4x3" alt="...">'
             : `<svg

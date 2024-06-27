@@ -112,7 +112,8 @@ async function adminUsers_delete(req, res, next) {
 }
 
 async function getRealTimeProducts(req, res) {
-  return res.render("realTimeProducts", { title: "realTimeProducts" });
+  const {user} = req
+  return res.render("realTimeProducts", { title: "realTimeProducts" ,user });
 }
 async function getCarts(req, res) {
   const { cid } = req.params;
