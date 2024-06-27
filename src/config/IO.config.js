@@ -207,7 +207,7 @@ async function SaveImages(data) {
     );
     fileNames.forEach((fileName) => {});
     // Devolver nombres de archivo al cliente
-    return "images/products/"+fileNames;
+    return "/images/products/"+fileNames;
   } catch (error) {
     logger.error("❌ ~ SaveImages ~ error:",
       "Error al procesar imágenes:",
